@@ -2,6 +2,7 @@ use axum::Router;
 
 use tokio::net::TcpListener;
 
+mod database;
 mod handlers;
 mod router;
 mod structs;
