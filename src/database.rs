@@ -1,11 +1,11 @@
 use sqlx::{postgres::PgPoolOptions, PgPool, Pool, Postgres};
 
-struct Database {
+pub struct Database {
     pool: PgPool,
 }
 
 impl Database {
-    async fn new(url: String) -> Self {
+    pub async fn new(url: &str) -> Self {
         let pool: Pool<Postgres> = PgPoolOptions::new()
             .max_connections(30)
             .connect(&url)

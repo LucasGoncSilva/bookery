@@ -1,5 +1,9 @@
-use axum::http::StatusCode;
+use std::sync::Arc;
 
-pub async fn hello() -> Result<(StatusCode, String), StatusCode> {
+use axum::{extract::State, http::StatusCode};
+
+use crate::database::Database;
+
+pub async fn hello(State(db): State<Arc<Database>>) -> Result<(StatusCode, String), StatusCode> {
     Ok((StatusCode::OK, String::from("Salve")))
 }
