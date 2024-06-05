@@ -24,9 +24,10 @@ mod person_name {
         fn try_from(token: String) -> Result<Self, Self::Error> {
             if token.chars().count() > 120 {
                 return Err(super::ConversionError::TokenTooLong);
-            } else if !token.is_ascii() {
+            } else if !token.chars().all(|c: char| char::is_ascii_alphabetic(&c)) {
                 return Err(super::ConversionError::InvalidType);
             }
+
             Ok(PersonName(token))
         }
     }
