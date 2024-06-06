@@ -7,7 +7,7 @@ mod person_name {
     pub struct PersonName(String);
 
     impl PersonName {
-        fn as_str(&self) -> String {
+        pub fn as_str(&self) -> String {
             String::from(&self.0)
         }
     }
@@ -33,6 +33,38 @@ mod person_name {
     }
 }
 
-mod author;
+mod born_date {
+    use time::{format_description::FormatItem, macros::format_description, Date};
 
+    const BORN_FORMAT: &[FormatItem<'static>] = format_description!("[year]-[month]-[day]");
+
+    pub struct BornDate(Date);
+
+    impl BornDate {
+        pub fn as_str(&self) -> String {
+            self.0.format(&BORN_FORMAT).unwrap()
+        }
+    }
+
+    impl From<BornDate> for Date {
+        fn from(value: BornDate) -> Date {
+            value.0
+        }
+    }
+
+    impl TryFrom<String> for BornDate {
+        type Error = super::ConversionError;
+
+        fn try_from(token: String) -> Result<Self, Self::Error> {
+            match Date::parse(&token, &BORN_FORMAT) {
+                Ok(date) => Ok(BornDate(date)),
+                Err(_) => Err(super::ConversionError::InvalidType),
+            }
+        }
+    }
+}
+
+pub mod author;
+
+pub use born_date::BornDate;
 pub use person_name::PersonName;
