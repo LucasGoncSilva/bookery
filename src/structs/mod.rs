@@ -1,9 +1,13 @@
+use serde::Serialize;
+
+#[derive(Debug)]
 pub enum ConversionError {
     TokenTooLong,
     InvalidType,
 }
 
 mod person_name {
+    #[derive(super::Serialize)]
     pub struct PersonName(String);
 
     impl PersonName {
@@ -38,6 +42,7 @@ mod born_date {
 
     const BORN_FORMAT: &[FormatItem<'static>] = format_description!("[year]-[month]-[day]");
 
+    #[derive(super::Serialize)]
     pub struct BornDate(Date);
 
     impl BornDate {

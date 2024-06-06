@@ -1,8 +1,9 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::structs::{BornDate, ConversionError, PersonName};
 
+#[derive(Serialize)]
 pub struct Author {
     pub id: Uuid,
     pub name: PersonName,

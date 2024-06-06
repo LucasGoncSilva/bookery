@@ -1,5 +1,7 @@
 use std::sync::Arc;
 
+use axum::extract::Path;
+use axum::response::IntoResponse;
 use axum::{extract::State, http::StatusCode, Json};
 use uuid::Uuid;
 
@@ -16,5 +18,17 @@ pub async fn create_author(
             Ok(author_uuid) => Ok((StatusCode::CREATED, Json(author_uuid))),
             Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
         },
+    }
+}
+
+pub async fn get_author(
+    State(db): State<Arc<Database>>,
+    Path(author_uuid): Path<Uuid>,
+// ) -> Result<(StatusCode, Json<Author>), StatusCode> {
+) -> impl IntoResponse {
+    match db.get_author(author_uuid).await {
+        Ok(Some(author)) => Ok((StatusCode::OK, Json(author))),
+        Ok(None) => Err(StatusCode::NOT_FOUND),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }

@@ -4,7 +4,7 @@ use sqlx::{
 };
 use uuid::Uuid;
 
-use crate::structs::author::Author;
+use crate::structs::{author::Author, BornDate, PersonName};
 
 pub struct Database {
     pool: PgPool,
@@ -39,5 +39,30 @@ impl Database {
         .await?;
 
         Ok(author_uuid)
+    }
+
+    pub async fn get_author(&self, author_uuid: Uuid) -> Result<Option<Author>, SqlxErr> {
+        let author = sqlx::query(
+            "
+            SELECT id, name, born
+            FROM tbl_authors
+            WHERE id = $1
+        ",
+        )
+        .bind(String::from(author_uuid))
+        .map(|row: PgRow| {
+            let name_parser: String = row.get("name");
+            let born_parser: String = row.get("born");
+
+            let id: Uuid = Uuid::parse_str(row.get("id")).unwrap();
+            let name: PersonName = PersonName::try_from(name_parser).unwrap();
+            let born: BornDate = BornDate::try_from(born_parser).unwrap();
+
+            Author { id, name, born }
+        })
+        .fetch_optional(&self.pool)
+        .await?;
+
+        Ok(author)
     }
 }
