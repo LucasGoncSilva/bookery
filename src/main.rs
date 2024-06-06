@@ -11,7 +11,9 @@ mod structs;
 
 #[tokio::main]
 async fn main() {
-    let db_url: String = env::var("DATABASE_URL").unwrap_or(String::from("postgres://postgres:postgres@localhost:5432/postgres"));
+    let db_url: String = env::var("DATABASE_URL").unwrap_or(String::from(
+        "postgres://postgres:postgres@localhost:5432/postgres",
+    ));
     let conn: database::Database = database::Database::new(&db_url).await;
     let db: Arc<database::Database> = Arc::new(conn);
 

@@ -12,6 +12,8 @@ impl Database {
             .await
             .unwrap();
 
+        sqlx::migrate!("./src/migrations").run(&pool).await.unwrap();
+
         Self { pool }
     }
 }
