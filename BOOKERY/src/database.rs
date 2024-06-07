@@ -92,4 +92,23 @@ impl Database {
 
         Ok(authors_vec)
     }
+
+    pub async fn delete_author(&self, author_uuid: Uuid) -> Result<Uuid, SqlxErr> {
+        let author_uuid: Uuid = sqlx::query(
+            "
+            DELETE FROM tbl_authors
+            WHERE id = $1
+            RETURNING id
+        ",
+        )
+        .bind(author_uuid)
+        .map(|row: PgRow| {
+            let uuid: Uuid = row.get("id");
+            uuid
+        })
+        .fetch_one(&self.pool)
+        .await?;
+
+        Ok(author_uuid)
+    }
 }

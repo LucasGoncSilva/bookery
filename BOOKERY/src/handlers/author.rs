@@ -7,7 +7,7 @@ use uuid::Uuid;
 use crate::database::Database;
 use crate::structs::author::{Author, NewAuthor};
 
-use super::QueryURL;
+use super::{DeletingStruct, QueryURL};
 
 type DB = Arc<Database>;
 type ResultStatus<T> = Result<(StatusCode, Json<T>), StatusCode>;
@@ -42,6 +42,23 @@ pub async fn search_authors(
 ) -> ResultStatus<Vec<Author>> {
     match db.search_authors(t.name).await {
         Ok(authors_vec) => Ok((StatusCode::OK, Json(authors_vec))),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
+pub async fn delete_author(
+    State(db): State<DB>,
+    Json(author_uuid): Json<DeletingStruct>,
+) -> ResultStatus<String> {
+    match db.get_author(author_uuid.id).await {
+        Ok(Some(author)) => match db.delete_author(author.id).await {
+            Ok(author_uuid) => Ok((
+                StatusCode::NO_CONTENT,
+                Json(format!("Author {author_uuid} deleted")),
+            )),
+            Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+        },
+        Ok(None) => Err(StatusCode::NOT_FOUND),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }
