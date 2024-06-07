@@ -5,7 +5,7 @@ use sqlx::{
 use time::Date;
 use uuid::Uuid;
 
-use crate::structs::{author::Author, BornDate, PersonName};
+use crate::structs::{author::Author, PersonName};
 
 pub struct Database {
     pool: PgPool,
@@ -34,7 +34,7 @@ impl Database {
         )
         .bind(author.id)
         .bind(author.name.as_str())
-        .bind(author.born.as_date())
+        .bind(author.born)
         .map(|row: PgRow| {
             let uuid: Uuid = row.get("id");
             uuid
@@ -56,11 +56,10 @@ impl Database {
         .bind(author_uuid)
         .map(|row: PgRow| {
             let name_parser: String = row.get("name");
-            let born_parser: Date = row.get("born");
 
             let id: Uuid = row.get("id");
             let name: PersonName = PersonName::try_from(name_parser).unwrap();
-            let born: BornDate = BornDate::from(born_parser);
+            let born: Date = row.get("born");
 
             Author { id, name, born }
         })
@@ -81,11 +80,10 @@ impl Database {
         .bind(format!("%{terms}%"))
         .map(|row: PgRow| {
             let name_parser: String = row.get("name");
-            let born_parser: Date = row.get("born");
 
             let id: Uuid = row.get("id");
             let name: PersonName = PersonName::try_from(name_parser).unwrap();
-            let born: BornDate = BornDate::from(born_parser);
+            let born: Date = row.get("born");
 
             Author { id, name, born }
         })

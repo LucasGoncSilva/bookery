@@ -37,51 +37,8 @@ mod person_name {
     }
 }
 
-mod born_date {
-    use time::{format_description::FormatItem, macros::format_description, Date};
-
-    const BORN_FORMAT: &[FormatItem<'static>] = format_description!("[year]-[month]-[day]");
-
-    #[derive(super::Serialize)]
-    pub struct BornDate(Date);
-
-    impl BornDate {
-        pub fn as_str(&self) -> String {
-            self.0.format(&BORN_FORMAT).unwrap()
-        }
-
-        pub fn as_date(&self) -> Date {
-            self.0
-        }
-    }
-
-    impl From<Date> for BornDate {
-        fn from(value: Date) -> BornDate {
-            BornDate(value)
-        }
-    }
-
-    impl From<BornDate> for Date {
-        fn from(value: BornDate) -> Date {
-            value.0
-        }
-    }
-
-    impl TryFrom<String> for BornDate {
-        type Error = super::ConversionError;
-
-        fn try_from(token: String) -> Result<Self, Self::Error> {
-            let parsed_token: Result<Date, time::error::Parse> = Date::parse(&token, &BORN_FORMAT);
-
-            match parsed_token {
-                Ok(date) => Ok(BornDate(date)),
-                Err(_) => Err(super::ConversionError::InvalidType),
-            }
-        }
-    }
-}
+time::serde::format_description!(date_format, Date, "[year]-[month]-[day]");
 
 pub mod author;
 
-pub use born_date::BornDate;
 pub use person_name::PersonName;
