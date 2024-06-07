@@ -2,9 +2,9 @@ use sqlx::{
     postgres::{PgPoolOptions, PgRow},
     Error as SqlxErr, PgPool, Pool, Postgres, Row,
 };
+use time::Date;
 use uuid::Uuid;
 
-use crate::handlers::QueryURL;
 use crate::structs::{author::Author, BornDate, PersonName};
 
 pub struct Database {
@@ -12,7 +12,7 @@ pub struct Database {
 }
 
 impl Database {
-    pub async fn new(url: &str) -> Self {
+    pub async fn conn(url: &str) -> Self {
         let pool: Pool<Postgres> = PgPoolOptions::new()
             .max_connections(30)
             .connect(url)
@@ -28,14 +28,17 @@ impl Database {
         let author_uuid: Uuid = sqlx::query(
             "
             INSERT INTO tbl_authors (id, name, born)
-            VALUE ($1, $2, $3)
+            VALUES ($1, $2, $3)
             RETURNING id
         ",
         )
-        .bind(String::from(author.id))
+        .bind(author.id)
         .bind(author.name.as_str())
-        .bind(author.born.as_str())
-        .map(|row: PgRow| Uuid::parse_str(row.get("id")).unwrap())
+        .bind(author.born.as_date())
+        .map(|row: PgRow| {
+            let uuid: Uuid = row.get("id");
+            uuid
+        })
         .fetch_one(&self.pool)
         .await?;
 
@@ -43,21 +46,21 @@ impl Database {
     }
 
     pub async fn get_author(&self, author_uuid: Uuid) -> Result<Option<Author>, SqlxErr> {
-        let author = sqlx::query(
+        let author: Option<Author> = sqlx::query(
             "
             SELECT id, name, born
             FROM tbl_authors
             WHERE id = $1
         ",
         )
-        .bind(String::from(author_uuid))
+        .bind(author_uuid)
         .map(|row: PgRow| {
             let name_parser: String = row.get("name");
-            let born_parser: String = row.get("born");
+            let born_parser: Date = row.get("born");
 
-            let id: Uuid = Uuid::parse_str(row.get("id")).unwrap();
+            let id: Uuid = row.get("id");
             let name: PersonName = PersonName::try_from(name_parser).unwrap();
-            let born: BornDate = BornDate::try_from(born_parser).unwrap();
+            let born: BornDate = BornDate::from(born_parser);
 
             Author { id, name, born }
         })
@@ -67,7 +70,7 @@ impl Database {
         Ok(author)
     }
 
-    pub async fn search_authors(&self, terms: QueryURL) -> Result<Vec<Author>, SqlxErr> {
+    pub async fn search_authors(&self, terms: String) -> Result<Vec<Author>, SqlxErr> {
         let authors_vec: Vec<Author> = sqlx::query(
             "
             SELECT id, name, born
@@ -75,14 +78,14 @@ impl Database {
             WHERE name ILIKE $1
         ",
         )
-        .bind(terms.name)
+        .bind(format!("%{terms}%"))
         .map(|row: PgRow| {
             let name_parser: String = row.get("name");
-            let born_parser: String = row.get("born");
+            let born_parser: Date = row.get("born");
 
-            let id: Uuid = Uuid::parse_str(row.get("id")).unwrap();
+            let id: Uuid = row.get("id");
             let name: PersonName = PersonName::try_from(name_parser).unwrap();
-            let born: BornDate = BornDate::try_from(born_parser).unwrap();
+            let born: BornDate = BornDate::from(born_parser);
 
             Author { id, name, born }
         })

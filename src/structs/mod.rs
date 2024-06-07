@@ -49,6 +49,16 @@ mod born_date {
         pub fn as_str(&self) -> String {
             self.0.format(&BORN_FORMAT).unwrap()
         }
+
+        pub fn as_date(&self) -> Date {
+            self.0
+        }
+    }
+
+    impl From<Date> for BornDate {
+        fn from(value: Date) -> BornDate {
+            BornDate(value)
+        }
     }
 
     impl From<BornDate> for Date {
@@ -61,7 +71,9 @@ mod born_date {
         type Error = super::ConversionError;
 
         fn try_from(token: String) -> Result<Self, Self::Error> {
-            match Date::parse(&token, &BORN_FORMAT) {
+            let parsed_token: Result<Date, time::error::Parse> = Date::parse(&token, &BORN_FORMAT);
+
+            match parsed_token {
                 Ok(date) => Ok(BornDate(date)),
                 Err(_) => Err(super::ConversionError::InvalidType),
             }

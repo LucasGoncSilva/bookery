@@ -9,23 +9,26 @@ use crate::structs::author::{Author, NewAuthor};
 
 use super::QueryURL;
 
+type DB = Arc<Database>;
+type ResultStatus<T> = Result<(StatusCode, Json<T>), StatusCode>;
+
 pub async fn create_author(
-    State(db): State<Arc<Database>>,
+    State(db): State<DB>,
     Json(incoming_author): Json<NewAuthor>,
-) -> Result<(StatusCode, Json<Uuid>), StatusCode> {
+) -> ResultStatus<Uuid> {
     match Author::new(incoming_author) {
-        Err(_) => Err(StatusCode::UNPROCESSABLE_ENTITY),
         Ok(author) => match db.create_author(author).await {
             Ok(author_uuid) => Ok((StatusCode::CREATED, Json(author_uuid))),
             Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
         },
+        Err(_) => Err(StatusCode::UNPROCESSABLE_ENTITY),
     }
 }
 
 pub async fn get_author(
-    State(db): State<Arc<Database>>,
+    State(db): State<DB>,
     Path(author_uuid): Path<Uuid>,
-) -> Result<(StatusCode, Json<Author>), StatusCode> {
+) -> ResultStatus<Author> {
     match db.get_author(author_uuid).await {
         Ok(Some(author)) => Ok((StatusCode::OK, Json(author))),
         Ok(None) => Err(StatusCode::NOT_FOUND),
@@ -34,10 +37,10 @@ pub async fn get_author(
 }
 
 pub async fn search_authors(
-    State(db): State<Arc<Database>>,
+    State(db): State<DB>,
     Query(t): Query<QueryURL>,
-) -> Result<(StatusCode, Json<Vec<Author>>), StatusCode> {
-    match db.search_authors(t).await {
+) -> ResultStatus<Vec<Author>> {
+    match db.search_authors(t.name).await {
         Ok(authors_vec) => Ok((StatusCode::OK, Json(authors_vec))),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
