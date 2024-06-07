@@ -4,6 +4,7 @@ use sqlx::{
 };
 use uuid::Uuid;
 
+use crate::handlers::QueryURL;
 use crate::structs::{author::Author, BornDate, PersonName};
 
 pub struct Database {
@@ -64,5 +65,30 @@ impl Database {
         .await?;
 
         Ok(author)
+    }
+
+    pub async fn search_authors(&self, terms: QueryURL) -> Result<Vec<Author>, SqlxErr> {
+        let authors_vec: Vec<Author> = sqlx::query(
+            "
+            SELECT id, name, born
+            FROM tbl_authors
+            WHERE name ILIKE $1
+        ",
+        )
+        .bind(terms.name)
+        .map(|row: PgRow| {
+            let name_parser: String = row.get("name");
+            let born_parser: String = row.get("born");
+
+            let id: Uuid = Uuid::parse_str(row.get("id")).unwrap();
+            let name: PersonName = PersonName::try_from(name_parser).unwrap();
+            let born: BornDate = BornDate::try_from(born_parser).unwrap();
+
+            Author { id, name, born }
+        })
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(authors_vec)
     }
 }
