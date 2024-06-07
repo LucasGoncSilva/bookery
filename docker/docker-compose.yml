@@ -4,7 +4,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile
     volumes:
-      - ../:/app
+      - ../BOOKERY:/app
     command: bash -c "cargo run --release"
     ports:
       - "3000:3000"

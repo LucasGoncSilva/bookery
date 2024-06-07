@@ -16,13 +16,8 @@ sqlx = { version = "0.7.4", features = [
   "time",
   "uuid",
 ] }
-time = { version = "0.3.36", features = [
-  "formatting",
-  "parsing",
-  "macros",
-  "serde",
-] }
-tokio = { version = "1.37.0", features = ["full"] }
+time = { version = "0.3.36", features = ["macros", "serde"] }
+tokio = { version = "1.37.0", features = ["rt-multi-thread"] }
 uuid = { version = "1.8.0", features = ["v4", "serde"] }
 
 [profile.release]

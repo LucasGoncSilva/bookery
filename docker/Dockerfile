@@ -4,6 +4,6 @@ ARG release
 
 WORKDIR /app
 
-COPY . .
+COPY /BOOKERY .
 
 RUN cargo build --release
