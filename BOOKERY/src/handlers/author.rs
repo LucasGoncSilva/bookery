@@ -62,3 +62,10 @@ pub async fn delete_author(
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }
+
+pub async fn count_authors(State(db): State<DB>) -> ResultStatus<i64> {
+    match db.count_authors().await {
+        Ok(num) => Ok((StatusCode::OK, Json(num))),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}

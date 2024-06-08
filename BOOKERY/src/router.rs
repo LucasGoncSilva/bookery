@@ -7,7 +7,7 @@ use axum::{
 
 use crate::{
     database::Database,
-    handlers::author::{create_author, get_author, search_authors, delete_author},
+    handlers::author::{count_authors, create_author, delete_author, get_author, search_authors},
 };
 
 pub fn router(db: Arc<Database>) -> Router {
@@ -16,5 +16,6 @@ pub fn router(db: Arc<Database>) -> Router {
         .route("/author/get/:id", get(get_author))
         .route("/author/search", get(search_authors))
         .route("/author/delete", post(delete_author))
+        .route("/author/count", get(count_authors))
         .with_state(db)
 }

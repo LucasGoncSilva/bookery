@@ -111,4 +111,17 @@ impl Database {
 
         Ok(author_uuid)
     }
+
+    pub async fn count_authors(&self) -> Result<i64, SqlxErr> {
+        let total: i64 = sqlx::query_scalar(
+            "
+            SELECT count(*) as total
+            FROM tbl_authors
+        ",
+        )
+        .fetch_one(&self.pool)
+        .await?;
+
+        Ok(total)
+    }
 }
