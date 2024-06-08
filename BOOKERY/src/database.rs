@@ -7,6 +7,8 @@ use uuid::Uuid;
 
 use crate::structs::{author::Author, PersonName};
 
+type ResultDB<T> = Result<T, SqlxErr>;
+
 pub struct Database {
     pool: PgPool,
 }
@@ -24,7 +26,7 @@ impl Database {
         Self { pool }
     }
 
-    pub async fn create_author(&self, author: Author) -> Result<Uuid, SqlxErr> {
+    pub async fn create_author(&self, author: Author) -> ResultDB<Uuid> {
         let author_uuid: Uuid = sqlx::query(
             "
             INSERT INTO tbl_authors (id, name, born)
@@ -45,7 +47,7 @@ impl Database {
         Ok(author_uuid)
     }
 
-    pub async fn get_author(&self, author_uuid: Uuid) -> Result<Option<Author>, SqlxErr> {
+    pub async fn get_author(&self, author_uuid: Uuid) -> ResultDB<Option<Author>> {
         let author: Option<Author> = sqlx::query(
             "
             SELECT id, name, born
@@ -69,7 +71,7 @@ impl Database {
         Ok(author)
     }
 
-    pub async fn search_authors(&self, terms: String) -> Result<Vec<Author>, SqlxErr> {
+    pub async fn search_authors(&self, terms: String) -> ResultDB<Vec<Author>> {
         let authors_vec: Vec<Author> = sqlx::query(
             "
             SELECT id, name, born
@@ -93,7 +95,7 @@ impl Database {
         Ok(authors_vec)
     }
 
-    pub async fn delete_author(&self, author_uuid: Uuid) -> Result<Uuid, SqlxErr> {
+    pub async fn delete_author(&self, author_uuid: Uuid) -> ResultDB<Uuid> {
         let author_uuid: Uuid = sqlx::query(
             "
             DELETE FROM tbl_authors
@@ -112,7 +114,7 @@ impl Database {
         Ok(author_uuid)
     }
 
-    pub async fn count_authors(&self) -> Result<i64, SqlxErr> {
+    pub async fn count_authors(&self) -> ResultDB<i64> {
         let total: i64 = sqlx::query_scalar(
             "
             SELECT count(*) as total
