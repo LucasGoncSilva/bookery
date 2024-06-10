@@ -71,6 +71,25 @@ impl Database {
         Ok(author)
     }
 
+    pub async fn get_author_id(&self, author_uuid: Uuid) -> ResultDB<Option<Uuid>> {
+        let author_uuid: Option<Uuid> = sqlx::query(
+            "
+            SELECT id
+            FROM tbl_authors
+            WHERE id = $1
+        ",
+        )
+        .bind(author_uuid)
+        .map(|row: PgRow| {
+            let id: Uuid = row.get("id");
+            id
+        })
+        .fetch_optional(&self.pool)
+        .await?;
+
+        Ok(author_uuid)
+    }
+
     pub async fn search_authors(&self, terms: String) -> ResultDB<Vec<Author>> {
         let authors_vec: Vec<Author> = sqlx::query(
             "
@@ -93,6 +112,28 @@ impl Database {
         .await?;
 
         Ok(authors_vec)
+    }
+
+    pub async fn update_author(&self, author: Author) -> ResultDB<Uuid> {
+        let author_uuid: Uuid = sqlx::query(
+            "
+            UPDATE tbl_authors
+            SET name = $1, born = $2
+            WHERE id = $3
+            RETURNING id
+        ",
+        )
+        .bind(author.name.as_str())
+        .bind(author.born)
+        .bind(author.id)
+        .map(|row: PgRow| {
+            let uuid: Uuid = row.get("id");
+            uuid
+        })
+        .fetch_one(&self.pool)
+        .await?;
+
+        Ok(author_uuid)
     }
 
     pub async fn delete_author(&self, author_uuid: Uuid) -> ResultDB<Uuid> {

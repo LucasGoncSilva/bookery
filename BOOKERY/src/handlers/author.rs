@@ -5,7 +5,7 @@ use axum::{extract::State, http::StatusCode, Json};
 use uuid::Uuid;
 
 use crate::database::Database;
-use crate::structs::author::{Author, NewAuthor};
+use crate::structs::author::{Author, PayloadAuthor, PayloadUpdateAuthor};
 
 use super::{DeletingStruct, QueryURL};
 
@@ -14,9 +14,9 @@ type ResultStatus<T> = Result<(StatusCode, Json<T>), StatusCode>;
 
 pub async fn create_author(
     State(db): State<DB>,
-    Json(incoming_author): Json<NewAuthor>,
+    Json(incoming_author): Json<PayloadAuthor>,
 ) -> ResultStatus<Uuid> {
-    match Author::new(incoming_author) {
+    match Author::create(incoming_author) {
         Ok(author) => match db.create_author(author).await {
             Ok(author_uuid) => Ok((StatusCode::CREATED, Json(author_uuid))),
             Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
@@ -46,11 +46,28 @@ pub async fn search_authors(
     }
 }
 
+pub async fn update_author(
+    State(db): State<DB>,
+    Json(payload_update_author): Json<PayloadUpdateAuthor>,
+) -> ResultStatus<Uuid> {
+    match db.get_author_id(payload_update_author.id).await {
+        Ok(Some(_author_uuid)) => match Author::parse(payload_update_author) {
+            Ok(updated_author) => match db.update_author(updated_author).await {
+                Ok(author_uuid) => Ok((StatusCode::ACCEPTED, Json(author_uuid))),
+                Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+            },
+            Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+        },
+        Ok(None) => Err(StatusCode::NOT_FOUND),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
 pub async fn delete_author(
     State(db): State<DB>,
-    Json(author_uuid): Json<DeletingStruct>,
+    Json(incoming_struct): Json<DeletingStruct>,
 ) -> ResultStatus<String> {
-    match db.get_author(author_uuid.id).await {
+    match db.get_author(incoming_struct.id).await {
         Ok(Some(author)) => match db.delete_author(author.id).await {
             Ok(author_uuid) => Ok((
                 StatusCode::NO_CONTENT,

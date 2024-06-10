@@ -5,7 +5,8 @@ services:
       dockerfile: docker/Dockerfile
     volumes:
       - ../BOOKERY:/app
-    command: bash -c "cargo run --release"
+    # command: bash -c "cargo run --release"
+    command: bash -c "cargo run"
     ports:
       - "3000:3000"
     environment:
