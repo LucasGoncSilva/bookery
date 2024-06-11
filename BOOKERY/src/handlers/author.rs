@@ -4,7 +4,7 @@ use axum::extract::{Path, Query};
 use axum::{extract::State, http::StatusCode, Json};
 use uuid::Uuid;
 
-use crate::database::Database;
+use crate::database::conn::Database;
 use crate::structs::author::{Author, PayloadAuthor, PayloadUpdateAuthor};
 
 use super::{DeletingStruct, QueryURL};

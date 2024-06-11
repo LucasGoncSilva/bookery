@@ -6,7 +6,7 @@ use axum::{
 };
 
 use crate::{
-    database::Database,
+    database::conn::Database,
     handlers::{
         author::{
             count_authors, create_author, delete_author, get_author, search_authors, update_author,
