@@ -12,3 +12,4 @@ pub struct DeletingStruct {
 }
 
 pub mod author;
+pub mod book;
