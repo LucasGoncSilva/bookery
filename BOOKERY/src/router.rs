@@ -18,14 +18,14 @@ use crate::{
 pub fn router(db: Arc<Database>) -> Router {
     Router::new()
         // Authors
-        .route("/author/new", post(create_author))
+        .route("/author/create", post(create_author))
         .route("/author/get/:id", get(get_author))
         .route("/author/search", get(search_authors))
         .route("/author/update", post(update_author))
         .route("/author/delete", post(delete_author))
         .route("/author/count", get(count_authors))
         // Books
-        .route("/book/new", post(create_book))
+        .route("/book/create", post(create_book))
         .route("/book/get/:id", get(get_book))
         .route("/book/search", get(search_books))
         .route("/book/update", post(update_book))

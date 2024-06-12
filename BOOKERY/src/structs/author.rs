@@ -4,7 +4,7 @@ use uuid::Uuid;
 
 use crate::structs::{ConversionError, PersonName};
 
-#[derive(Serialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Author {
     pub id: Uuid,
     pub name: PersonName,
@@ -12,14 +12,14 @@ pub struct Author {
     pub born: Date,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct PayloadAuthor {
     pub name: String,
     #[serde(with = "super::date_format")]
     pub born: Date,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct PayloadUpdateAuthor {
     pub id: Uuid,
     pub name: String,

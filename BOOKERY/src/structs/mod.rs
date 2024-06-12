@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug)]
 pub enum ConversionError {
@@ -7,7 +7,7 @@ pub enum ConversionError {
 }
 
 mod person_name {
-    #[derive(super::Serialize, Debug, PartialEq, Clone)] // TODO compare bin with and without this params
+    #[derive(super::Serialize, super::Deserialize, Debug, PartialEq, Clone)] // TODO compare bin with and without this params
     pub struct PersonName(String);
 
     impl PersonName {
