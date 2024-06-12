@@ -4,7 +4,7 @@ use uuid::Uuid;
 
 use crate::structs::{BookName, ConversionError, EditorName};
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug, PartialEq, Clone)]
 pub struct Book {
     pub id: Uuid,
     pub name: BookName,
@@ -70,31 +70,7 @@ impl Book {
 mod tests {
     use super::*;
 
-    use std::fmt::{Debug, Formatter, Result as FmtResult};
-
     use time::{error::ComponentRange, Month};
-
-    impl PartialEq for Book {
-        fn eq(&self, other: &Self) -> bool {
-            self.id == other.id
-                && self.name.as_str() == other.name.as_str()
-                && self.author_uuid == other.author_uuid
-                && self.editor.as_str() == other.editor.as_str()
-                && self.release == other.release
-        }
-    }
-
-    impl Debug for Book {
-        fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-            f.debug_struct("Book")
-                .field("id", &self.id)
-                .field("name", &self.name.as_str())
-                .field("author_uuid", &self.author_uuid)
-                .field("editor", &self.editor.as_str())
-                .field("release", &self.release)
-                .finish()
-        }
-    }
 
     const DEFAULT_NAME: &'static str = "Name";
     const DEFAULT_EDITOR: &'static str = "Editor";

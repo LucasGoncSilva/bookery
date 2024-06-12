@@ -89,7 +89,7 @@ mod person_name {
 }
 
 mod book_name {
-    #[derive(super::Serialize)]
+    #[derive(super::Serialize, Debug, PartialEq, Clone)]
     pub struct BookName(String);
 
     impl BookName {
@@ -117,24 +117,9 @@ mod book_name {
 
     #[cfg(test)]
     mod tests {
-        use std::{
-            fmt::{Debug, Formatter, Result as FmtResult},
-            iter::repeat,
-        };
+        use std::iter::repeat;
 
         use super::*;
-
-        impl PartialEq for BookName {
-            fn eq(&self, other: &Self) -> bool {
-                self.0 == other.0
-            }
-        }
-
-        impl Debug for BookName {
-            fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-                f.debug_struct("BookName").field("0", &self.0).finish()
-            }
-        }
 
         #[test]
         fn test_create_book_name() {
@@ -172,7 +157,7 @@ mod book_name {
 }
 
 mod editor_name {
-    #[derive(super::Serialize)]
+    #[derive(super::Serialize, Debug, PartialEq, Clone)]
     pub struct EditorName(String);
 
     impl EditorName {
@@ -203,24 +188,9 @@ mod editor_name {
 
     #[cfg(test)]
     mod tests {
-        use std::{
-            fmt::{Debug, Formatter, Result as FmtResult},
-            iter::repeat,
-        };
+        use std::iter::repeat;
 
         use super::*;
-
-        impl PartialEq for EditorName {
-            fn eq(&self, other: &Self) -> bool {
-                self.0 == other.0
-            }
-        }
-
-        impl Debug for EditorName {
-            fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-                f.debug_struct("EditorName").field("0", &self.0).finish()
-            }
-        }
 
         #[test]
         fn test_create_editor_name() {
