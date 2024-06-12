@@ -148,3 +148,201 @@ impl Database {
         Ok(total)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use std::env::var;
+
+    use time::{error::ComponentRange, Date, Month};
+
+    use crate::{
+        handlers::QueryURL,
+        structs::author::{PayloadAuthor, PayloadUpdateAuthor},
+    };
+
+    const DEFAULT_NAME: &'static str = "Name";
+    const DEFAULT_BORN: Result<Date, ComponentRange> =
+        Date::from_calendar_date(2000, Month::January, 1);
+
+    async fn conn_db() -> Database {
+        let db_url: String = var("DATABASE_URL").unwrap();
+        Database::conn(&db_url).await
+    }
+
+    fn create_author() -> Author {
+        let payload_author: PayloadAuthor = PayloadAuthor {
+            name: DEFAULT_NAME.to_string(),
+            born: DEFAULT_BORN.unwrap(),
+        };
+
+        Author::create(payload_author).unwrap()
+    }
+
+    #[sqlx::test]
+    async fn test_create_author() {
+        let db: Database = conn_db().await;
+
+        let author: Author = create_author();
+
+        let author_uuid: Uuid = author.id.clone();
+
+        let sql_result: Uuid = db.create_author(author).await.unwrap();
+
+        assert_eq!(sql_result, author_uuid);
+    }
+
+    #[sqlx::test]
+    async fn test_get_author_found() {
+        let db: Database = conn_db().await;
+
+        let author: Author = create_author();
+
+        let author_uuid: Uuid = db.create_author(author.clone()).await.unwrap();
+
+        let sql_result: Author = db.get_author(author_uuid.clone()).await.unwrap().unwrap();
+
+        assert_eq!(sql_result, author);
+    }
+
+    #[sqlx::test]
+    async fn test_get_author_not_found() {
+        let db: Database = conn_db().await;
+
+        let author: Author = create_author();
+
+        let sql_result: Option<Author> = db.get_author(author.id.clone()).await.unwrap();
+
+        assert!(sql_result.is_none());
+    }
+
+    #[sqlx::test]
+    async fn test_get_author_id_found() {
+        let db: Database = conn_db().await;
+
+        let author: Author = create_author();
+
+        let author_uuid: Uuid = db.create_author(author.clone()).await.unwrap();
+
+        let sql_result: Uuid = db
+            .get_author_id(author_uuid.clone())
+            .await
+            .unwrap()
+            .unwrap();
+
+        assert_eq!(sql_result, author_uuid);
+    }
+
+    #[sqlx::test]
+    async fn test_get_author_id_not_found() {
+        let db: Database = conn_db().await;
+
+        let author: Author = create_author();
+
+        let sql_result: Option<Uuid> = db.get_author_id(author.id.clone()).await.unwrap();
+
+        assert!(sql_result.is_none());
+    }
+
+    #[sqlx::test]
+    async fn test_search_authors_case_sensitive_found() {
+        let db: Database = conn_db().await;
+
+        let author: Author = create_author();
+
+        let term: QueryURL = QueryURL {
+            term: "Nam".to_string(),
+        };
+
+        db.create_author(author.clone()).await.unwrap();
+
+        let sql_result: Vec<Author> = db.search_authors(term.term).await.unwrap();
+
+        assert!(sql_result.contains(&author));
+    }
+
+    #[sqlx::test]
+    async fn test_search_authors_case_insensitive_found() {
+        let db: Database = conn_db().await;
+
+        let author: Author = create_author();
+
+        let term: QueryURL = QueryURL {
+            term: "nam".to_string(),
+        };
+
+        db.create_author(author.clone()).await.unwrap();
+
+        let sql_result: Vec<Author> = db.search_authors(term.term).await.unwrap();
+
+        assert!(sql_result.contains(&author));
+    }
+
+    #[sqlx::test]
+    async fn test_search_authors_not_found() {
+        let db: Database = conn_db().await;
+
+        let author: Author = create_author();
+
+        let term: QueryURL = QueryURL {
+            term: "foo".to_string(),
+        };
+
+        db.create_author(author.clone()).await.unwrap();
+
+        let sql_result: Vec<Author> = db.search_authors(term.term).await.unwrap();
+
+        assert!(!sql_result.contains(&author));
+    }
+
+    #[sqlx::test]
+    async fn test_update_author() {
+        let db: Database = conn_db().await;
+
+        let author: Author = create_author();
+
+        let sql_author_uuid: Uuid = db.create_author(author.clone()).await.unwrap();
+
+        let payload_update_author: PayloadUpdateAuthor = PayloadUpdateAuthor {
+            id: sql_author_uuid.clone(),
+            name: DEFAULT_NAME.to_string(),
+            born: DEFAULT_BORN.unwrap(),
+        };
+
+        db.update_author(Author::parse(payload_update_author).unwrap())
+            .await
+            .unwrap();
+
+        let sql_result: Author = db.get_author(sql_author_uuid).await.unwrap().unwrap();
+
+        assert_eq!(sql_result, author);
+    }
+
+    #[sqlx::test]
+    async fn test_delete_author() {
+        let db: Database = conn_db().await;
+
+        let author: Author = create_author();
+
+        db.create_author(author.clone()).await.unwrap();
+
+        let sql_result_before: Option<Uuid> = db.get_author_id(author.id.clone()).await.unwrap();
+
+        let sql_result_uuid: Uuid = db.delete_author(author.id).await.unwrap();
+
+        let sql_result_after: Option<Uuid> = db.get_author_id(sql_result_uuid).await.unwrap();
+
+        assert!(sql_result_before.is_some());
+        assert!(sql_result_after.is_none());
+    }
+
+    #[sqlx::test]
+    async fn test_count_authors() {
+        let db: Database = conn_db().await;
+
+        let sql_result: i64 = db.count_authors().await.unwrap();
+
+        assert!(sql_result >= 0);
+    }
+}

@@ -40,7 +40,7 @@ pub async fn search_authors(
     State(db): State<DB>,
     Query(t): Query<QueryURL>,
 ) -> ResultStatus<Vec<Author>> {
-    match db.search_authors(t.name).await {
+    match db.search_authors(t.term).await {
         Ok(authors_vec) => Ok((StatusCode::OK, Json(authors_vec))),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }

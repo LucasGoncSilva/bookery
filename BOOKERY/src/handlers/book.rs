@@ -37,7 +37,7 @@ pub async fn search_books(
     State(db): State<DB>,
     Query(t): Query<QueryURL>,
 ) -> ResultStatus<Vec<Book>> {
-    match db.search_books(t.name).await {
+    match db.search_books(t.term).await {
         Ok(books_vec) => Ok((StatusCode::OK, Json(books_vec))),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }

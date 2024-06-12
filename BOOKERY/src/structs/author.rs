@@ -4,7 +4,7 @@ use uuid::Uuid;
 
 use crate::structs::{ConversionError, PersonName};
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug, PartialEq, Clone)]
 pub struct Author {
     pub id: Uuid,
     pub name: PersonName,
@@ -14,17 +14,17 @@ pub struct Author {
 
 #[derive(Deserialize)]
 pub struct PayloadAuthor {
-    name: String,
+    pub name: String,
     #[serde(with = "super::date_format")]
-    born: Date,
+    pub born: Date,
 }
 
 #[derive(Deserialize)]
 pub struct PayloadUpdateAuthor {
     pub id: Uuid,
-    name: String,
+    pub name: String,
     #[serde(with = "super::date_format")]
-    born: Date,
+    pub born: Date,
 }
 
 impl Author {
@@ -52,27 +52,7 @@ impl Author {
 mod tests {
     use super::*;
 
-    use std::fmt::{Debug, Formatter, Result as FmtResult};
-
     use time::{error::ComponentRange, Month};
-
-    impl PartialEq for Author {
-        fn eq(&self, other: &Self) -> bool {
-            self.id == other.id
-                && self.name.as_str() == other.name.as_str()
-                && self.born == other.born
-        }
-    }
-
-    impl Debug for Author {
-        fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-            f.debug_struct("Author")
-                .field("id", &self.id)
-                .field("name", &self.name.as_str())
-                .field("born", &self.born)
-                .finish()
-        }
-    }
 
     const DEFAULT_NAME: &'static str = "Name";
     const DEFAULT_BORN: Result<Date, ComponentRange> =

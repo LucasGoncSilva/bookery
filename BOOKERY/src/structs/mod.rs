@@ -7,7 +7,7 @@ pub enum ConversionError {
 }
 
 mod person_name {
-    #[derive(super::Serialize)]
+    #[derive(super::Serialize, Debug, PartialEq, Clone)] // TODO compare bin with and without this params
     pub struct PersonName(String);
 
     impl PersonName {
@@ -41,24 +41,9 @@ mod person_name {
 
     #[cfg(test)]
     mod tests {
-        use std::{
-            fmt::{Debug, Formatter, Result as FmtResult},
-            iter::repeat,
-        };
+        use std::iter::repeat;
 
         use super::*;
-
-        impl PartialEq for PersonName {
-            fn eq(&self, other: &Self) -> bool {
-                self.0 == other.0
-            }
-        }
-
-        impl Debug for PersonName {
-            fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-                f.debug_struct("PersonName").field("0", &self.0).finish()
-            }
-        }
 
         #[test]
         fn test_create_person_name() {
