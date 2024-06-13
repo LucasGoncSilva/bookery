@@ -1,5 +1,5 @@
 [package]
-name = "bookery"
+name = "bookery-api"
 version = "0.1.0"
 edition = "2021"
 
