@@ -104,6 +104,13 @@ mod tests {
     const DEFAULT_BORN: Result<Date, ComponentRange> =
         Date::from_calendar_date(2000, Month::January, 1);
 
+    fn create_payload_author() -> PayloadAuthor {
+        PayloadAuthor {
+            name: DEFAULT_NAME.to_string(),
+            born: DEFAULT_BORN.unwrap(),
+        }
+    }
+
     async fn server() -> TestServer {
         let db_url: String = var("DATABASE_URL").unwrap();
         let db: Database = Database::conn(&db_url).await;
@@ -111,6 +118,14 @@ mod tests {
         let app: Router = router(Arc::new(db));
 
         TestServer::new(app).unwrap()
+    }
+
+    async fn create_author_on_server() -> TestResponse {
+        server()
+            .await
+            .post("/author/create")
+            .json(&json!(create_payload_author()))
+            .await
     }
 
     #[tokio::test]
@@ -140,16 +155,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_create_author_post_valid() {
-        let payload_author: PayloadAuthor = PayloadAuthor {
-            name: DEFAULT_NAME.to_string(),
-            born: DEFAULT_BORN.unwrap(),
-        };
-
-        let res: TestResponse = server()
-            .await
-            .post("/author/create")
-            .json(&json!(payload_author))
-            .await;
+        let res: TestResponse = create_author_on_server().await;
 
         res.assert_status(StatusCode::CREATED);
     }
@@ -169,7 +175,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_get_author_get_inexistent() {
+    async fn test_get_author_get_not_found() {
         let example_uuid: Uuid = Uuid::new_v4();
         let res: TestResponse = server()
             .await
@@ -181,16 +187,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_author_get_found() {
-        let payload_author: PayloadAuthor = PayloadAuthor {
-            name: DEFAULT_NAME.to_string(),
-            born: DEFAULT_BORN.unwrap(),
-        };
-
-        let author_created: TestResponse = server()
-            .await
-            .post("/author/create")
-            .json(&json!(payload_author))
-            .await;
+        let author_created: TestResponse = create_author_on_server().await;
 
         let author_uuid: String = author_created.json();
 
@@ -214,16 +211,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_search_authors_get_no_param() {
-        let payload_author: PayloadAuthor = PayloadAuthor {
-            name: DEFAULT_NAME.to_string(),
-            born: DEFAULT_BORN.unwrap(),
-        };
-
-        server()
-            .await
-            .post("/author/create")
-            .json(&json!(payload_author))
-            .await;
+        create_author_on_server().await;
 
         let res: TestResponse = server().await.get("/author/search").await;
         res.assert_status_bad_request();
@@ -234,16 +222,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_search_authors_get_found() {
-        let payload_author: PayloadAuthor = PayloadAuthor {
-            name: DEFAULT_NAME.to_string(),
-            born: DEFAULT_BORN.unwrap(),
-        };
-
-        let create_res: TestResponse = server()
-            .await
-            .post("/author/create")
-            .json(&json!(payload_author))
-            .await;
+        let create_res: TestResponse = create_author_on_server().await;
 
         let created_author_uuid: Uuid = create_res.json();
 
@@ -303,16 +282,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_update_author_post_valid() {
-        let payload_author: PayloadAuthor = PayloadAuthor {
-            name: DEFAULT_NAME.to_string(),
-            born: DEFAULT_BORN.unwrap(),
-        };
-
-        let create_res: TestResponse = server()
-            .await
-            .post("/author/create")
-            .json(&json!(payload_author))
-            .await;
+        let create_res: TestResponse = create_author_on_server().await;
 
         let created_author_uuid: Uuid = create_res.json();
 
@@ -358,16 +328,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_delete_author_post_valid() {
-        let payload_author: PayloadAuthor = PayloadAuthor {
-            name: DEFAULT_NAME.to_string(),
-            born: DEFAULT_BORN.unwrap(),
-        };
-
-        let create_res: TestResponse = server()
-            .await
-            .post("/author/create")
-            .json(&json!(payload_author))
-            .await;
+        let create_res: TestResponse = create_author_on_server().await;
 
         let created_author_uuid: Uuid = create_res.json();
 
