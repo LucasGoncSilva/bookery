@@ -89,7 +89,7 @@ mod person_name {
 }
 
 mod book_name {
-    #[derive(super::Serialize, Debug, PartialEq, Clone)]
+    #[derive(super::Serialize, super::Deserialize, Debug, PartialEq, Clone)]
     pub struct BookName(String);
 
     impl BookName {
@@ -157,7 +157,7 @@ mod book_name {
 }
 
 mod editor_name {
-    #[derive(super::Serialize, Debug, PartialEq, Clone)]
+    #[derive(super::Serialize, super::Deserialize, Debug, PartialEq, Clone)]
     pub struct EditorName(String);
 
     impl EditorName {

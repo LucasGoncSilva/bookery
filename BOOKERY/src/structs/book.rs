@@ -4,7 +4,7 @@ use uuid::Uuid;
 
 use crate::structs::{BookName, ConversionError, EditorName};
 
-#[derive(Serialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Book {
     pub id: Uuid,
     pub name: BookName,
@@ -14,7 +14,7 @@ pub struct Book {
     pub release: Date,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct PayloadBook {
     pub name: String,
     pub author_uuid: Uuid,
@@ -23,7 +23,7 @@ pub struct PayloadBook {
     pub release: Date,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct PayloadUpdateBook {
     pub id: Uuid,
     pub name: String,
