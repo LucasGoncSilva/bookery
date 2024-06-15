@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS tbl_costumers (
+  id UUID PRIMARY KEY NOT NULL,
+  name VARCHAR(120) NOT NULL,
+  document VARCHAR(11) NOT NULL,
+  born DATE NOT NULL
+)

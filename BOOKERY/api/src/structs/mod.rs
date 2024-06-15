@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug)]
 pub enum ConversionError {
     TokenTooLong,
+    TokenIncompatibleSize,
     InvalidType,
 }
 
@@ -26,7 +27,7 @@ mod person_name {
         type Error = super::ConversionError;
 
         fn try_from(token: String) -> Result<Self, Self::Error> {
-            if token.chars().count() > 128 {
+            if token.len() > 128 {
                 return Err(super::ConversionError::TokenTooLong);
             } else if !token
                 .chars()
@@ -108,7 +109,7 @@ mod book_name {
         type Error = super::ConversionError;
 
         fn try_from(token: String) -> Result<Self, Self::Error> {
-            if token.chars().count() > 64 {
+            if token.len() > 64 {
                 return Err(super::ConversionError::TokenTooLong);
             }
             Ok(BookName(token))
@@ -176,7 +177,7 @@ mod editor_name {
         type Error = super::ConversionError;
 
         fn try_from(token: String) -> Result<Self, Self::Error> {
-            if token.chars().count() > 64 {
+            if token.len() > 64 {
                 return Err(super::ConversionError::TokenTooLong);
             } else if !token.chars().all(|c: char| char::is_ascii(&c)) {
                 return Err(super::ConversionError::InvalidType);
@@ -235,11 +236,100 @@ mod editor_name {
     }
 }
 
+mod person_document {
+    #[derive(super::Serialize, super::Deserialize, Debug, PartialEq, Clone)] // TODO compare bin with and without this params
+    pub struct PersonDocument(String);
+
+    impl PersonDocument {
+        pub fn as_str(&self) -> String {
+            String::from(&self.0)
+        }
+    }
+
+    impl From<PersonDocument> for String {
+        fn from(value: PersonDocument) -> String {
+            value.0
+        }
+    }
+
+    impl TryFrom<String> for PersonDocument {
+        type Error = super::ConversionError;
+
+        fn try_from(token: String) -> Result<Self, Self::Error> {
+            if token.len() != 11 {
+                return Err(super::ConversionError::TokenIncompatibleSize);
+            } else if !token.chars().all(|c: char| char::is_ascii_digit(&c)) {
+                return Err(super::ConversionError::InvalidType);
+            }
+
+            Ok(PersonDocument(token))
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use std::iter::repeat;
+
+        use super::*;
+
+        #[test]
+        fn test_create_person_document() {
+            let document: String = "00000000000".to_string();
+
+            let person_document_document: String = document.clone();
+
+            let person_document: PersonDocument = PersonDocument::try_from(document).unwrap();
+
+            assert_eq!(person_document, PersonDocument(person_document_document));
+        }
+
+        #[test]
+        fn test_pass_person_document_limit() {
+            let document: String = repeat("0").take(11).collect();
+
+            PersonDocument::try_from(document).unwrap();
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_fail_person_document_limit_below_expected() {
+            let document: String = repeat("0").take(10).collect();
+
+            PersonDocument::try_from(document).unwrap();
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_fail_person_document_limit_above_expected() {
+            let document: String = repeat("0").take(12).collect();
+
+            PersonDocument::try_from(document).unwrap();
+        }
+
+        #[test]
+        fn test_pass_person_document_charset() {
+            let document: String = "12345678901".to_string();
+
+            PersonDocument::try_from(document).unwrap();
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_fail_person_document_charset() {
+            let document: String = "a0000000000".to_string();
+
+            PersonDocument::try_from(document).unwrap();
+        }
+    }
+}
+
 time::serde::format_description!(date_format, Date, "[year]-[month]-[day]");
 
 pub mod author;
 pub mod book;
+pub mod costumer;
 
 pub use book_name::BookName;
 pub use editor_name::EditorName;
+pub use person_document::PersonDocument;
 pub use person_name::PersonName;

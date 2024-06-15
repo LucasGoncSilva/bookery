@@ -12,6 +12,10 @@ use crate::{
             count_authors, create_author, delete_author, get_author, search_authors, update_author,
         },
         book::{count_books, create_book, delete_book, get_book, search_books, update_book},
+        costumer::{
+            count_costumers, create_costumer, delete_costumer, get_costumer, search_costumers,
+            update_costumer,
+        },
     },
 };
 
@@ -31,6 +35,13 @@ pub fn router(db: Arc<Database>) -> Router {
         .route("/book/update", post(update_book))
         .route("/book/delete", post(delete_book))
         .route("/book/count", get(count_books))
+        // Costumers
+        .route("/costumer/create", post(create_costumer))
+        .route("/costumer/get/:id", get(get_costumer))
+        .route("/costumer/search", get(search_costumers))
+        .route("/costumer/update", post(update_costumer))
+        .route("/costumer/delete", post(delete_costumer))
+        .route("/costumer/count", get(count_costumers))
         // Database Sync
         .with_state(db)
 }

@@ -5,3 +5,4 @@ type ResultDB<T> = Result<T, Error>;
 pub mod author;
 pub mod book;
 pub mod conn;
+pub mod costumer;
