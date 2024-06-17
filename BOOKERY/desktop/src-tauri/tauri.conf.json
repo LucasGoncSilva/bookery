@@ -1,12 +1,11 @@
 {
   "build": {
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist"
+    "devPath": "../src",
+    "distDir": "../src",
+    "withGlobalTauri": true
   },
   "package": {
-    "productName": "desktop",
+    "productName": "bookery-desktop",
     "version": "0.0.0"
   },
   "tauri": {
@@ -19,9 +18,8 @@
     },
     "windows": [
       {
-        "title": "desktop",
-        "width": 800,
-        "height": 600
+        "title": "Bookery",
+        "maximized": true
       }
     ],
     "security": {
