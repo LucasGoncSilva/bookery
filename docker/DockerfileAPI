@@ -1,9 +1,7 @@
 FROM rust:latest
 
-ARG release
-
 WORKDIR /app
 
-COPY /BOOKERY .
+COPY /BOOKERY/api .
 
 RUN cargo build --release
