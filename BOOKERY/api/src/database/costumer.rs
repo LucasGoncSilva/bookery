@@ -78,7 +78,7 @@ impl Database {
         Ok(costumer_uuid)
     }
 
-    pub async fn search_costumers(&self, terms: String) -> ResultDB<Vec<Costumer>> {
+    pub async fn search_costumers(&self, token: String) -> ResultDB<Vec<Costumer>> {
         let costumers_vec: Vec<Costumer> = sqlx::query(
             "
             SELECT id, name, document, born
@@ -86,7 +86,7 @@ impl Database {
             WHERE name ILIKE $1
         ",
         )
-        .bind(format!("%{terms}%"))
+        .bind(format!("%{token}%"))
         .map(|row: PgRow| {
             let name_parser: String = row.get("name");
             let document_parser: String = row.get("document");
@@ -273,13 +273,13 @@ mod tests {
 
         let costumer: Costumer = create_costumer();
 
-        let term: QueryURL = QueryURL {
-            term: "Nam".to_string(),
+        let token: QueryURL = QueryURL {
+            token: "Nam".to_string(),
         };
 
         db.create_costumer(costumer.clone()).await.unwrap();
 
-        let sql_result: Vec<Costumer> = db.search_costumers(term.term).await.unwrap();
+        let sql_result: Vec<Costumer> = db.search_costumers(token.token).await.unwrap();
 
         assert!(sql_result.contains(&costumer));
     }
@@ -290,13 +290,13 @@ mod tests {
 
         let costumer: Costumer = create_costumer();
 
-        let term: QueryURL = QueryURL {
-            term: "nam".to_string(),
+        let token: QueryURL = QueryURL {
+            token: "nam".to_string(),
         };
 
         db.create_costumer(costumer.clone()).await.unwrap();
 
-        let sql_result: Vec<Costumer> = db.search_costumers(term.term).await.unwrap();
+        let sql_result: Vec<Costumer> = db.search_costumers(token.token).await.unwrap();
 
         assert!(sql_result.contains(&costumer));
     }
@@ -307,13 +307,13 @@ mod tests {
 
         let costumer: Costumer = create_costumer();
 
-        let term: QueryURL = QueryURL {
-            term: "foo".to_string(),
+        let token: QueryURL = QueryURL {
+            token: "foo".to_string(),
         };
 
         db.create_costumer(costumer.clone()).await.unwrap();
 
-        let sql_result: Vec<Costumer> = db.search_costumers(term.term).await.unwrap();
+        let sql_result: Vec<Costumer> = db.search_costumers(token.token).await.unwrap();
 
         assert!(!sql_result.contains(&costumer));
     }

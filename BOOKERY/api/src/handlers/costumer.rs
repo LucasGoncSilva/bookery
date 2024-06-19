@@ -40,7 +40,7 @@ pub async fn search_costumers(
     State(db): State<DB>,
     Query(t): Query<QueryURL>,
 ) -> ResultStatus<Vec<Costumer>> {
-    match db.search_costumers(t.term).await {
+    match db.search_costumers(t.token).await {
         Ok(costumers_vec) => Ok((StatusCode::OK, Json(costumers_vec))),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
@@ -234,17 +234,17 @@ mod tests {
             .await
             .json();
 
-        let res: TestResponse = server().await.get("/costumer/search?term").await;
+        let res: TestResponse = server().await.get("/costumer/search?token").await;
         res.assert_status_ok();
         let res_json: Vec<Costumer> = res.json();
         assert!(res_json.contains(&created_costumer));
 
-        let res: TestResponse = server().await.get("/costumer/search?term=").await;
+        let res: TestResponse = server().await.get("/costumer/search?token=").await;
         res.assert_status_ok();
         let res_json: Vec<Costumer> = res.json();
         assert!(res_json.contains(&created_costumer));
 
-        let res: TestResponse = server().await.get("/costumer/search?term=am").await;
+        let res: TestResponse = server().await.get("/costumer/search?token=am").await;
         res.assert_status_ok();
         let res_json: Vec<Costumer> = res.json();
         assert!(res_json.contains(&created_costumer));
@@ -252,7 +252,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_search_costumers_post() {
-        let res: TestResponse = server().await.post("/costumer/search?term=am").await;
+        let res: TestResponse = server().await.post("/costumer/search?token=am").await;
 
         res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
     }

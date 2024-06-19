@@ -70,7 +70,7 @@ impl Database {
         Ok(author_uuid)
     }
 
-    pub async fn search_authors(&self, terms: String) -> ResultDB<Vec<Author>> {
+    pub async fn search_authors(&self, token: String) -> ResultDB<Vec<Author>> {
         let authors_vec: Vec<Author> = sqlx::query(
             "
             SELECT id, name, born
@@ -78,7 +78,7 @@ impl Database {
             WHERE name ILIKE $1
         ",
         )
-        .bind(format!("%{terms}%"))
+        .bind(format!("%{token}%"))
         .map(|row: PgRow| {
             let name_parser: String = row.get("name");
 
@@ -251,13 +251,13 @@ mod tests {
 
         let author: Author = create_author();
 
-        let term: QueryURL = QueryURL {
-            term: "Nam".to_string(),
+        let token: QueryURL = QueryURL {
+            token: "Nam".to_string(),
         };
 
         db.create_author(author.clone()).await.unwrap();
 
-        let sql_result: Vec<Author> = db.search_authors(term.term).await.unwrap();
+        let sql_result: Vec<Author> = db.search_authors(token.token).await.unwrap();
 
         assert!(sql_result.contains(&author));
     }
@@ -268,13 +268,13 @@ mod tests {
 
         let author: Author = create_author();
 
-        let term: QueryURL = QueryURL {
-            term: "nam".to_string(),
+        let token: QueryURL = QueryURL {
+            token: "nam".to_string(),
         };
 
         db.create_author(author.clone()).await.unwrap();
 
-        let sql_result: Vec<Author> = db.search_authors(term.term).await.unwrap();
+        let sql_result: Vec<Author> = db.search_authors(token.token).await.unwrap();
 
         assert!(sql_result.contains(&author));
     }
@@ -285,13 +285,13 @@ mod tests {
 
         let author: Author = create_author();
 
-        let term: QueryURL = QueryURL {
-            term: "foo".to_string(),
+        let token: QueryURL = QueryURL {
+            token: "foo".to_string(),
         };
 
         db.create_author(author.clone()).await.unwrap();
 
-        let sql_result: Vec<Author> = db.search_authors(term.term).await.unwrap();
+        let sql_result: Vec<Author> = db.search_authors(token.token).await.unwrap();
 
         assert!(!sql_result.contains(&author));
     }

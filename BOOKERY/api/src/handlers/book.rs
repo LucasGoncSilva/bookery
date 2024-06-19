@@ -37,7 +37,7 @@ pub async fn search_books(
     State(db): State<DB>,
     Query(t): Query<QueryURL>,
 ) -> ResultStatus<Vec<Book>> {
-    match db.search_books(t.term).await {
+    match db.search_books(t.token).await {
         Ok(books_vec) => Ok((StatusCode::OK, Json(books_vec))),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
@@ -132,6 +132,7 @@ mod tests {
 
     async fn create_payload_book() -> PayloadBook {
         let author_uuid: Uuid = create_author_on_server().await.json();
+
         PayloadBook {
             name: DEFAULT_NAME.to_string(),
             author_uuid,
@@ -249,17 +250,17 @@ mod tests {
             .await
             .json();
 
-        let res: TestResponse = server().await.get("/book/search?term").await;
+        let res: TestResponse = server().await.get("/book/search?token").await;
         res.assert_status_ok();
         let res_json: Vec<Book> = res.json();
         assert!(res_json.contains(&created_book));
 
-        let res: TestResponse = server().await.get("/book/search?term=").await;
+        let res: TestResponse = server().await.get("/book/search?token=").await;
         res.assert_status_ok();
         let res_json: Vec<Book> = res.json();
         assert!(res_json.contains(&created_book));
 
-        let res: TestResponse = server().await.get("/book/search?term=am").await;
+        let res: TestResponse = server().await.get("/book/search?token=am").await;
         res.assert_status_ok();
         let res_json: Vec<Book> = res.json();
         assert!(res_json.contains(&created_book));
@@ -267,7 +268,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_search_books_post() {
-        let res: TestResponse = server().await.post("/book/search?term=am").await;
+        let res: TestResponse = server().await.post("/book/search?token=am").await;
 
         res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
     }

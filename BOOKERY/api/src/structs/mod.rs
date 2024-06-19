@@ -237,7 +237,7 @@ mod editor_name {
 }
 
 mod person_document {
-    #[derive(super::Serialize, super::Deserialize, Debug, PartialEq, Clone)] // TODO compare bin with and without this params
+    #[derive(super::Serialize, super::Deserialize, Debug, PartialEq, Clone)]
     pub struct PersonDocument(String);
 
     impl PersonDocument {
@@ -325,9 +325,41 @@ mod person_document {
 
 time::serde::format_description!(date_format, Date, "[year]-[month]-[day]");
 
+mod option_date_format {
+    use super::date_format;
+    use serde::{self, Deserialize, Deserializer, Serializer};
+    use time::format_description::well_known::Iso8601;
+    use time::Date;
+
+    pub fn serialize<S>(date: &Option<Date>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match date {
+            Some(date) => date_format::serialize(date, serializer),
+            None => serializer.serialize_none(),
+        }
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<Date>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let opt: Option<String> = Option::deserialize(deserializer)?;
+        match opt {
+            Some(s) => {
+                let date = Date::parse(&s, &Iso8601::DEFAULT).map_err(serde::de::Error::custom)?;
+                Ok(Some(date))
+            }
+            None => Ok(None),
+        }
+    }
+}
+
 pub mod author;
 pub mod book;
 pub mod costumer;
+pub mod rent;
 
 pub use book_name::BookName;
 pub use editor_name::EditorName;

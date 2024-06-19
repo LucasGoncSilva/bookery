@@ -3,7 +3,7 @@ use uuid::Uuid;
 
 #[derive(Deserialize)]
 pub struct QueryURL {
-    pub term: String,
+    pub token: String,
 }
 
 #[derive(Deserialize)]
@@ -14,3 +14,4 @@ pub struct DeletingStruct {
 pub mod author;
 pub mod book;
 pub mod costumer;
+pub mod rent;

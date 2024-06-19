@@ -81,7 +81,7 @@ impl Database {
         Ok(book_uuid)
     }
 
-    pub async fn search_books(&self, terms: String) -> ResultDB<Vec<Book>> {
+    pub async fn search_books(&self, token: String) -> ResultDB<Vec<Book>> {
         let book_vec: Vec<Book> = sqlx::query(
             "
         SELECT id, name, author_uuid, editor, release
@@ -90,7 +90,7 @@ impl Database {
         OR editor ILIKE $1
         ",
         )
-        .bind(format!("%{terms}%"))
+        .bind(format!("%{token}%"))
         .map(|row: PgRow| {
             let name_parser: String = row.get("name");
             let editor_parser: String = row.get("editor");
@@ -290,13 +290,13 @@ mod tests {
 
         let book: Book = create_book().await;
 
-        let term: QueryURL = QueryURL {
-            term: "Nam".to_string(),
+        let token: QueryURL = QueryURL {
+            token: "Nam".to_string(),
         };
 
         db.create_book(book.clone()).await.unwrap();
 
-        let sql_result: Vec<Book> = db.search_books(term.term).await.unwrap();
+        let sql_result: Vec<Book> = db.search_books(token.token).await.unwrap();
 
         assert!(sql_result.contains(&book));
     }
@@ -307,13 +307,13 @@ mod tests {
 
         let book: Book = create_book().await;
 
-        let term: QueryURL = QueryURL {
-            term: "nam".to_string(),
+        let token: QueryURL = QueryURL {
+            token: "nam".to_string(),
         };
 
         db.create_book(book.clone()).await.unwrap();
 
-        let sql_result: Vec<Book> = db.search_books(term.term).await.unwrap();
+        let sql_result: Vec<Book> = db.search_books(token.token).await.unwrap();
 
         assert!(sql_result.contains(&book));
     }
@@ -324,13 +324,13 @@ mod tests {
 
         let book: Book = create_book().await;
 
-        let term: QueryURL = QueryURL {
-            term: "foo".to_string(),
+        let token: QueryURL = QueryURL {
+            token: "foo".to_string(),
         };
 
         db.create_book(book.clone()).await.unwrap();
 
-        let sql_result: Vec<Book> = db.search_books(term.term).await.unwrap();
+        let sql_result: Vec<Book> = db.search_books(token.token).await.unwrap();
 
         assert!(!sql_result.contains(&book));
     }
