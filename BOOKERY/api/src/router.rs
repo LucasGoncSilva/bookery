@@ -5,6 +5,8 @@ use axum::{
     Router,
 };
 
+use tower_http::cors::CorsLayer;
+
 use crate::{
     database::conn::Database,
     handlers::{
@@ -50,6 +52,8 @@ pub fn router(db: Arc<Database>) -> Router {
         .route("/rent/update", post(update_rent))
         .route("/rent/delete", post(delete_rent))
         .route("/rent/count", get(count_rental))
+        // CORS
+        .layer(CorsLayer::permissive())
         // Database Sync
         .with_state(db)
 }
