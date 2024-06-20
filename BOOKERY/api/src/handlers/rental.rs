@@ -5,19 +5,19 @@ use axum::{extract::State, http::StatusCode, Json};
 use uuid::Uuid;
 
 use crate::database::conn::Database;
-use crate::structs::rent::{PayloadRent, PayloadUpdateRent, Rent};
+use crate::structs::rental::{PayloadRent, PayloadUpdateRent, Rent};
 
 use super::{DeletingStruct, QueryURL};
 
 type DB = Arc<Database>;
 type ResultStatus<T> = Result<(StatusCode, Json<T>), StatusCode>;
 
-pub async fn create_rent(
+pub async fn create_rental(
     State(db): State<DB>,
     Json(incoming_rent): Json<PayloadRent>,
 ) -> ResultStatus<Uuid> {
     match Rent::create(incoming_rent) {
-        Ok(rent) => match db.create_rent(rent).await {
+        Ok(rental) => match db.create_rental(rental).await {
             Ok(rent_uuid) => Ok((StatusCode::CREATED, Json(rent_uuid))),
             Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
         },
@@ -25,31 +25,31 @@ pub async fn create_rent(
     }
 }
 
-pub async fn get_rent(State(db): State<DB>, Path(rent_uuid): Path<Uuid>) -> ResultStatus<Rent> {
-    match db.get_rent(rent_uuid).await {
-        Ok(Some(rent)) => Ok((StatusCode::OK, Json(rent))),
+pub async fn get_rental(State(db): State<DB>, Path(rent_uuid): Path<Uuid>) -> ResultStatus<Rent> {
+    match db.get_rental(rent_uuid).await {
+        Ok(Some(rental)) => Ok((StatusCode::OK, Json(rental))),
         Ok(None) => Err(StatusCode::NOT_FOUND),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }
 
-pub async fn search_rental(
+pub async fn search_rentals(
     State(db): State<DB>,
     Query(t): Query<QueryURL>,
 ) -> ResultStatus<Vec<Rent>> {
-    match db.search_rental(t.token).await {
+    match db.search_rentals(t.token).await {
         Ok(rental_vec) => Ok((StatusCode::OK, Json(rental_vec))),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }
 
-pub async fn update_rent(
+pub async fn update_rental(
     State(db): State<DB>,
     Json(payload_update_rent): Json<PayloadUpdateRent>,
 ) -> ResultStatus<Uuid> {
-    match db.get_rent_id(payload_update_rent.id).await {
-        Ok(Some(_rent_uuid)) => match Rent::parse(payload_update_rent) {
-            Ok(updated_rent) => match db.update_rent(updated_rent).await {
+    match db.get_rental_id(payload_update_rent.id).await {
+        Ok(Some(_rental_uuid)) => match Rent::parse(payload_update_rent) {
+            Ok(updated_rent) => match db.update_rental(updated_rent).await {
                 Ok(rent_uuid) => Ok((StatusCode::ACCEPTED, Json(rent_uuid))),
                 Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
             },
@@ -60,12 +60,12 @@ pub async fn update_rent(
     }
 }
 
-pub async fn delete_rent(
+pub async fn delete_rental(
     State(db): State<DB>,
     Json(incoming_struct): Json<DeletingStruct>,
 ) -> ResultStatus<String> {
-    match db.get_rent(incoming_struct.id).await {
-        Ok(Some(rent)) => match db.delete_rent(rent.id).await {
+    match db.get_rental(incoming_struct.id).await {
+        Ok(Some(rental)) => match db.delete_rental(rental.id).await {
             Ok(rent_uuid) => Ok((
                 StatusCode::NO_CONTENT,
                 Json(format!("Rent {rent_uuid} deleted")),
@@ -77,8 +77,8 @@ pub async fn delete_rent(
     }
 }
 
-pub async fn count_rental(State(db): State<DB>) -> ResultStatus<i64> {
-    match db.count_rental().await {
+pub async fn count_rentals(State(db): State<DB>) -> ResultStatus<i64> {
+    match db.count_rentals().await {
         Ok(num) => Ok((StatusCode::OK, Json(num))),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
@@ -173,7 +173,7 @@ mod tests {
             .await
     }
 
-    async fn create_payload_rent() -> PayloadRent {
+    async fn create_payload_rental() -> PayloadRent {
         let book_uuid: Uuid = create_book_on_server().await.json();
         let costumer_uuid: Uuid = create_costumer_on_server().await.json();
 
@@ -185,33 +185,33 @@ mod tests {
         }
     }
 
-    async fn create_rent_on_server() -> TestResponse {
+    async fn create_rental_on_server() -> TestResponse {
         server()
             .await
-            .post("/rent/create")
-            .json(&json!(create_payload_rent().await))
+            .post("/rental/create")
+            .json(&json!(create_payload_rental().await))
             .await
     }
 
     #[tokio::test]
-    async fn test_create_rent_get() {
-        let res: TestResponse = server().await.get("/rent/create").await;
+    async fn test_create_rental_get() {
+        let res: TestResponse = server().await.get("/rental/create").await;
 
         res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
     }
 
     #[tokio::test]
-    async fn test_create_rent_post_no_data() {
-        let res: TestResponse = server().await.post("/rent/create").await;
+    async fn test_create_rental_post_no_data() {
+        let res: TestResponse = server().await.post("/rental/create").await;
 
         res.assert_status(StatusCode::UNSUPPORTED_MEDIA_TYPE);
     }
 
     #[tokio::test]
-    async fn test_create_rent_post_invalid() {
+    async fn test_create_rental_post_invalid() {
         let res: TestResponse = server()
             .await
-            .post("/rent/create")
+            .post("/rental/create")
             .json(&json!({"name":"Name"}))
             .await;
 
@@ -219,53 +219,53 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_create_rent_post_valid() {
-        let res: TestResponse = create_rent_on_server().await;
+    async fn test_create_rental_post_valid() {
+        let res: TestResponse = create_rental_on_server().await;
 
         res.assert_status(StatusCode::CREATED);
     }
 
     #[tokio::test]
-    async fn test_get_rent_get_empty() {
-        let res: TestResponse = server().await.get("/rent/get/").await;
+    async fn test_get_rental_get_empty() {
+        let res: TestResponse = server().await.get("/rental/get/").await;
 
         res.assert_status_not_found();
     }
 
     #[tokio::test]
-    async fn test_get_rent_get_invalid() {
-        let res: TestResponse = server().await.get("/rent/get/12345").await;
+    async fn test_get_rental_get_invalid() {
+        let res: TestResponse = server().await.get("/rental/get/12345").await;
 
         res.assert_status_bad_request();
     }
 
     #[tokio::test]
-    async fn test_get_rent_get_not_found() {
+    async fn test_get_rental_get_not_found() {
         let example_uuid: Uuid = Uuid::new_v4();
         let res: TestResponse = server()
             .await
-            .get(&format!("/rent/get/{example_uuid}"))
+            .get(&format!("/rental/get/{example_uuid}"))
             .await;
 
         res.assert_status_not_found();
     }
 
     #[tokio::test]
-    async fn test_get_rent_get_found() {
-        let rent_created: TestResponse = create_rent_on_server().await;
+    async fn test_get_rental_get_found() {
+        let rent_created: TestResponse = create_rental_on_server().await;
 
         let rent_uuid: String = rent_created.json();
 
-        let res: TestResponse = server().await.get(&format!("/rent/get/{rent_uuid}")).await;
+        let res: TestResponse = server().await.get(&format!("/rental/get/{rent_uuid}")).await;
 
         res.assert_status_ok();
     }
 
     #[tokio::test]
-    async fn test_get_rent_post() {
+    async fn test_get_rental_post() {
         let res: TestResponse = server()
             .await
-            .post(&format!("/rent/get/{}", Uuid::new_v4()))
+            .post(&format!("/rental/get/{}", Uuid::new_v4()))
             .await;
 
         res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
@@ -273,33 +273,33 @@ mod tests {
 
     #[tokio::test]
     async fn test_search_rental_get_no_param() {
-        create_rent_on_server().await;
+        create_rental_on_server().await;
 
-        let res: TestResponse = server().await.get("/rent/search").await;
+        let res: TestResponse = server().await.get("/rental/search").await;
         res.assert_status_bad_request();
 
-        let res: TestResponse = server().await.get("/rent/search?").await;
+        let res: TestResponse = server().await.get("/rental/search?").await;
         res.assert_status_bad_request();
     }
 
     #[tokio::test]
     async fn test_search_rental_get_found() {
-        let create_res: TestResponse = create_rent_on_server().await;
+        let create_res: TestResponse = create_rental_on_server().await;
 
-        let created_rent_uuid: Uuid = create_res.json();
+        let created_rental_uuid: Uuid = create_res.json();
 
         let created_rent: Rent = server()
             .await
-            .get(&format!("/rent/get/{created_rent_uuid}"))
+            .get(&format!("/rental/get/{created_rental_uuid}"))
             .await
             .json();
 
-        let res: TestResponse = server().await.get("/rent/search?token").await;
+        let res: TestResponse = server().await.get("/rental/search?token").await;
         res.assert_status_ok();
         let res_json: Vec<Rent> = res.json();
         assert!(res_json.contains(&created_rent));
 
-        let res: TestResponse = server().await.get("/rent/search?token=").await;
+        let res: TestResponse = server().await.get("/rental/search?token=").await;
         res.assert_status_ok();
         let res_json: Vec<Rent> = res.json();
         assert!(res_json.contains(&created_rent));
@@ -307,7 +307,7 @@ mod tests {
         let res: TestResponse = server()
             .await
             .get(&format!(
-                "/rent/search?token={}",
+                "/rental/search?token={}",
                 String::from(created_rent.book_uuid).chars().nth(2).unwrap()
             ))
             .await;
@@ -318,30 +318,30 @@ mod tests {
 
     #[tokio::test]
     async fn test_search_rental_post() {
-        let res: TestResponse = server().await.post("/rent/search?token=am").await;
+        let res: TestResponse = server().await.post("/rental/search?token=am").await;
 
         res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
     }
 
     #[tokio::test]
-    async fn test_update_rent_get() {
-        let res: TestResponse = server().await.post("/rent/update").await;
+    async fn test_update_rental_get() {
+        let res: TestResponse = server().await.post("/rental/update").await;
 
         res.assert_status(StatusCode::UNSUPPORTED_MEDIA_TYPE);
     }
 
     #[tokio::test]
-    async fn test_update_rent_post_no_data() {
-        let res: TestResponse = server().await.post("/rent/update").await;
+    async fn test_update_rental_post_no_data() {
+        let res: TestResponse = server().await.post("/rental/update").await;
 
         res.assert_status(StatusCode::UNSUPPORTED_MEDIA_TYPE);
     }
 
     #[tokio::test]
-    async fn test_update_rent_post_invalid() {
+    async fn test_update_rental_post_invalid() {
         let res: TestResponse = server()
             .await
-            .post("/rent/update")
+            .post("/rental/update")
             .json(&json!({"name":"Name"}))
             .await;
 
@@ -349,13 +349,13 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_update_rent_post_valid() {
-        let create_res: TestResponse = create_rent_on_server().await;
+    async fn test_update_rental_post_valid() {
+        let create_res: TestResponse = create_rental_on_server().await;
 
-        let created_rent_uuid: Uuid = create_res.json();
+        let created_rental_uuid: Uuid = create_res.json();
 
         let payload_update_rent: PayloadUpdateRent = PayloadUpdateRent {
-            id: created_rent_uuid,
+            id: created_rental_uuid,
             book_uuid: create_book_on_server().await.json(),
             costumer_uuid: create_costumer_on_server().await.json(),
             borrowed_at: DEFAULT_BORROWED_DATE.unwrap(),
@@ -365,7 +365,7 @@ mod tests {
 
         let res: TestResponse = server()
             .await
-            .post("/rent/update")
+            .post("/rental/update")
             .json(&json!(payload_update_rent))
             .await;
 
@@ -373,24 +373,24 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_delete_rent_get() {
-        let res: TestResponse = server().await.post("/rent/delete").await;
+    async fn test_delete_rental_get() {
+        let res: TestResponse = server().await.post("/rental/delete").await;
 
         res.assert_status(StatusCode::UNSUPPORTED_MEDIA_TYPE);
     }
 
     #[tokio::test]
-    async fn test_delete_rent_post_no_data() {
-        let res: TestResponse = server().await.post("/rent/delete").await;
+    async fn test_delete_rental_post_no_data() {
+        let res: TestResponse = server().await.post("/rental/delete").await;
 
         res.assert_status(StatusCode::UNSUPPORTED_MEDIA_TYPE);
     }
 
     #[tokio::test]
-    async fn test_delete_rent_post_invalid() {
+    async fn test_delete_rental_post_invalid() {
         let res: TestResponse = server()
             .await
-            .post("/rent/delete")
+            .post("/rental/delete")
             .json(&json!({"name":"Name"}))
             .await;
 
@@ -398,13 +398,13 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_delete_rent_post_valid() {
-        let create_res: TestResponse = create_rent_on_server().await;
+    async fn test_delete_rental_post_valid() {
+        let create_res: TestResponse = create_rental_on_server().await;
 
-        let created_rent_uuid: Uuid = create_res.json();
+        let created_rental_uuid: Uuid = create_res.json();
 
         let payload_delete_rent: PayloadUpdateRent = PayloadUpdateRent {
-            id: created_rent_uuid.clone(),
+            id: created_rental_uuid.clone(),
             book_uuid: create_book_on_server().await.json(),
             costumer_uuid: create_costumer_on_server().await.json(),
             borrowed_at: DEFAULT_BORROWED_DATE.unwrap(),
@@ -414,7 +414,7 @@ mod tests {
 
         let res: TestResponse = server()
             .await
-            .post("/rent/delete")
+            .post("/rental/delete")
             .json(&json!(payload_delete_rent))
             .await;
 
@@ -422,16 +422,16 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_count_rent_get() {
-        let res: TestResponse = server().await.get("/rent/count").await;
+    async fn test_count_rental_get() {
+        let res: TestResponse = server().await.get("/rental/count").await;
 
         res.assert_status_ok();
         assert!(res.json::<i64>() >= 0);
     }
 
     #[tokio::test]
-    async fn test_count_rent_post() {
-        let res: TestResponse = server().await.post("/rent/count").await;
+    async fn test_count_rental_post() {
+        let res: TestResponse = server().await.post("/rental/count").await;
 
         res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
     }

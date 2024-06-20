@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS tbl_rental (
+CREATE TABLE IF NOT EXISTS tbl_rentals (
   id UUID PRIMARY KEY NOT NULL,
   costumer_uuid UUID REFERENCES tbl_costumers(id),
   book_uuid UUID REFERENCES tbl_books(id),

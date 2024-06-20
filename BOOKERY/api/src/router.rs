@@ -21,7 +21,7 @@ use crate::{
             count_costumers, create_costumer, delete_costumer, get_costumer, search_costumers,
             update_costumer,
         },
-        rent::{count_rental, create_rent, delete_rent, get_rent, search_rental, update_rent},
+        rental::{count_rentals, create_rental, delete_rental, get_rental, search_rentals, update_rental},
     },
 };
 
@@ -49,13 +49,13 @@ pub fn router(db: Arc<Database>) -> Router {
         .route("/costumer/update", post(update_costumer))
         .route("/costumer/delete", post(delete_costumer))
         .route("/costumer/count", get(count_costumers))
-        // Rental
-        .route("/rent/create", post(create_rent))
-        .route("/rent/get/:id", get(get_rent))
-        .route("/rent/search", get(search_rental))
-        .route("/rent/update", post(update_rent))
-        .route("/rent/delete", post(delete_rent))
-        .route("/rent/count", get(count_rental))
+        // Rentals
+        .route("/rental/create", post(create_rental))
+        .route("/rental/get/:id", get(get_rental))
+        .route("/rental/search", get(search_rentals))
+        .route("/rental/update", post(update_rental))
+        .route("/rental/delete", post(delete_rental))
+        .route("/rental/count", get(count_rentals))
         // CORS
         .layer(CorsLayer::permissive())
         // Database Sync

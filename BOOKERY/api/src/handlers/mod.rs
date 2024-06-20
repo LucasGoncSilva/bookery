@@ -14,4 +14,4 @@ pub struct DeletingStruct {
 pub mod author;
 pub mod book;
 pub mod costumer;
-pub mod rent;
+pub mod rental;

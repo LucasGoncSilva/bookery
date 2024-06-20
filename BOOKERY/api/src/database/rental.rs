@@ -3,13 +3,13 @@ use time::Date;
 use uuid::Uuid;
 
 use crate::database::{conn::Database, ResultDB};
-use crate::structs::rent::Rent;
+use crate::structs::rental::Rent;
 
 impl Database {
-    pub async fn create_rent(&self, rent: Rent) -> ResultDB<Uuid> {
+    pub async fn create_rental(&self, rent: Rent) -> ResultDB<Uuid> {
         let rent_uuid: Uuid = sqlx::query(
             "
-            INSERT INTO tbl_rental (id, costumer_uuid, book_uuid, borrowed_at, due_date)
+            INSERT INTO tbl_rentals (id, costumer_uuid, book_uuid, borrowed_at, due_date)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING id
         ",
@@ -29,11 +29,11 @@ impl Database {
         Ok(rent_uuid)
     }
 
-    pub async fn get_rent(&self, rent_uuid: Uuid) -> ResultDB<Option<Rent>> {
+    pub async fn get_rental(&self, rent_uuid: Uuid) -> ResultDB<Option<Rent>> {
         let rent: Option<Rent> = sqlx::query(
             "
             SELECT id, costumer_uuid, book_uuid, borrowed_at, due_date, returned_at
-            FROM tbl_rental
+            FROM tbl_rentals
             WHERE id = $1
         ",
         )
@@ -61,11 +61,11 @@ impl Database {
         Ok(rent)
     }
 
-    pub async fn get_rent_id(&self, rent_uuid: Uuid) -> ResultDB<Option<Uuid>> {
+    pub async fn get_rental_id(&self, rent_uuid: Uuid) -> ResultDB<Option<Uuid>> {
         let rent_uuid: Option<Uuid> = sqlx::query(
             "
             SELECT id
-            FROM tbl_rental
+            FROM tbl_rentals
             WHERE id = $1
         ",
         )
@@ -80,11 +80,11 @@ impl Database {
         Ok(rent_uuid)
     }
 
-    pub async fn search_rental(&self, token: String) -> ResultDB<Vec<Rent>> {
+    pub async fn search_rentals(&self, token: String) -> ResultDB<Vec<Rent>> {
         let costumers_vec: Vec<Rent> = sqlx::query(
             "
             SELECT id, costumer_uuid, book_uuid, borrowed_at, due_date, returned_at
-            FROM tbl_rental
+            FROM tbl_rentals
             WHERE costumer_uuid::text ILIKE $1 OR book_uuid::text ILIKE $1
         ",
         )
@@ -112,10 +112,10 @@ impl Database {
         Ok(costumers_vec)
     }
 
-    pub async fn update_rent(&self, rent: Rent) -> ResultDB<Uuid> {
+    pub async fn update_rental(&self, rent: Rent) -> ResultDB<Uuid> {
         let rent_uuid: Uuid = sqlx::query(
             "
-            UPDATE tbl_rental
+            UPDATE tbl_rentals
             SET costumer_uuid = $1, book_uuid = $2, borrowed_at = $3, due_date = $4, returned_at = $5
             WHERE id = $6
             RETURNING id
@@ -137,10 +137,10 @@ impl Database {
         Ok(rent_uuid)
     }
 
-    pub async fn delete_rent(&self, rent_uuid: Uuid) -> ResultDB<Uuid> {
+    pub async fn delete_rental(&self, rent_uuid: Uuid) -> ResultDB<Uuid> {
         let rent_uuid: Uuid = sqlx::query(
             "
-            DELETE FROM tbl_rental
+            DELETE FROM tbl_rentals
             WHERE id = $1
             RETURNING id
         ",
@@ -156,11 +156,11 @@ impl Database {
         Ok(rent_uuid)
     }
 
-    pub async fn count_rental(&self) -> ResultDB<i64> {
+    pub async fn count_rentals(&self) -> ResultDB<i64> {
         let total: i64 = sqlx::query_scalar(
             "
             SELECT count(*) as total
-            FROM tbl_rental
+            FROM tbl_rentals
         ",
         )
         .fetch_one(&self.pool)
@@ -184,7 +184,7 @@ mod tests {
             author::{Author, PayloadAuthor},
             book::{Book, PayloadBook},
             costumer::{Costumer, PayloadCostumer},
-            rent::{PayloadRent, PayloadUpdateRent},
+            rental::{PayloadRent, PayloadUpdateRent},
         },
     };
 
@@ -251,7 +251,7 @@ mod tests {
         costumer
     }
 
-    async fn create_rent() -> Rent {
+    async fn create_rental() -> Rent {
         let book_uuid: Uuid = create_book().await.id;
         let costumer_uuid: Uuid = create_costumer().await.id;
 
@@ -266,62 +266,62 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn test_create_rent() {
+    async fn test_create_rental() {
         let db: Database = conn_db().await;
 
-        let rent: Rent = create_rent().await;
+        let rent: Rent = create_rental().await;
 
         let rent_uuid: Uuid = rent.id.clone();
 
-        let sql_result: Uuid = db.create_rent(rent).await.unwrap();
+        let sql_result: Uuid = db.create_rental(rent).await.unwrap();
 
         assert_eq!(sql_result, rent_uuid);
     }
 
     #[sqlx::test]
-    async fn test_get_rent_found() {
+    async fn test_get_rental_found() {
         let db: Database = conn_db().await;
 
-        let rent: Rent = create_rent().await;
+        let rent: Rent = create_rental().await;
 
-        let rent_uuid: Uuid = db.create_rent(rent.clone()).await.unwrap();
+        let rent_uuid: Uuid = db.create_rental(rent.clone()).await.unwrap();
 
-        let sql_result: Rent = db.get_rent(rent_uuid.clone()).await.unwrap().unwrap();
+        let sql_result: Rent = db.get_rental(rent_uuid.clone()).await.unwrap().unwrap();
 
         assert_eq!(sql_result, rent);
     }
 
     #[sqlx::test]
-    async fn test_get_rent_not_found() {
+    async fn test_get_rental_not_found() {
         let db: Database = conn_db().await;
 
-        let rent: Rent = create_rent().await;
+        let rent: Rent = create_rental().await;
 
-        let sql_result: Option<Rent> = db.get_rent(rent.id.clone()).await.unwrap();
+        let sql_result: Option<Rent> = db.get_rental(rent.id.clone()).await.unwrap();
 
         assert!(sql_result.is_none());
     }
 
     #[sqlx::test]
-    async fn test_get_rent_id_found() {
+    async fn test_get_rental_id_found() {
         let db: Database = conn_db().await;
 
-        let rent: Rent = create_rent().await;
+        let rent: Rent = create_rental().await;
 
-        let rent_uuid: Uuid = db.create_rent(rent.clone()).await.unwrap();
+        let rent_uuid: Uuid = db.create_rental(rent.clone()).await.unwrap();
 
-        let sql_result: Uuid = db.get_rent_id(rent_uuid.clone()).await.unwrap().unwrap();
+        let sql_result: Uuid = db.get_rental_id(rent_uuid.clone()).await.unwrap().unwrap();
 
         assert_eq!(sql_result, rent_uuid);
     }
 
     #[sqlx::test]
-    async fn test_get_rent_id_not_found() {
+    async fn test_get_rental_id_not_found() {
         let db: Database = conn_db().await;
 
-        let rent: Rent = create_rent().await;
+        let rent: Rent = create_rental().await;
 
-        let sql_result: Option<Uuid> = db.get_rent_id(rent.id.clone()).await.unwrap();
+        let sql_result: Option<Uuid> = db.get_rental_id(rent.id.clone()).await.unwrap();
 
         assert!(sql_result.is_none());
     }
@@ -330,15 +330,15 @@ mod tests {
     async fn test_search_rental_case_sensitive_found() {
         let db: Database = conn_db().await;
 
-        let rent: Rent = create_rent().await;
+        let rent: Rent = create_rental().await;
 
         let token: QueryURL = QueryURL {
             token: String::from(rent.costumer_uuid),
         };
 
-        db.create_rent(rent.clone()).await.unwrap();
+        db.create_rental(rent.clone()).await.unwrap();
 
-        let sql_result: Vec<Rent> = db.search_rental(token.token).await.unwrap();
+        let sql_result: Vec<Rent> = db.search_rentals(token.token).await.unwrap();
 
         assert!(sql_result.contains(&rent));
     }
@@ -347,15 +347,15 @@ mod tests {
     async fn test_search_rental_case_insensitive_found() {
         let db: Database = conn_db().await;
 
-        let rent: Rent = create_rent().await;
+        let rent: Rent = create_rental().await;
 
         let token: QueryURL = QueryURL {
             token: String::from(rent.book_uuid).to_ascii_uppercase(),
         };
 
-        db.create_rent(rent.clone()).await.unwrap();
+        db.create_rental(rent.clone()).await.unwrap();
 
-        let sql_result: Vec<Rent> = db.search_rental(token.token).await.unwrap();
+        let sql_result: Vec<Rent> = db.search_rentals(token.token).await.unwrap();
 
         assert!(sql_result.contains(&rent));
     }
@@ -364,29 +364,29 @@ mod tests {
     async fn test_search_rental_not_found() {
         let db: Database = conn_db().await;
 
-        let rent: Rent = create_rent().await;
+        let rent: Rent = create_rental().await;
 
         let token: QueryURL = QueryURL {
             token: "foo".to_string(),
         };
 
-        db.create_rent(rent.clone()).await.unwrap();
+        db.create_rental(rent.clone()).await.unwrap();
 
-        let sql_result: Vec<Rent> = db.search_rental(token.token).await.unwrap();
+        let sql_result: Vec<Rent> = db.search_rentals(token.token).await.unwrap();
 
         assert!(!sql_result.contains(&rent));
     }
 
     #[sqlx::test]
-    async fn test_update_rent() {
+    async fn test_update_rental() {
         let db: Database = conn_db().await;
 
-        let rent: Rent = create_rent().await;
+        let rent: Rent = create_rental().await;
 
-        let sql_rent_uuid: Uuid = db.create_rent(rent).await.unwrap();
+        let sql_rental_uuid: Uuid = db.create_rental(rent).await.unwrap();
 
         let payload_update_rent: PayloadUpdateRent = PayloadUpdateRent {
-            id: sql_rent_uuid.clone(),
+            id: sql_rental_uuid.clone(),
             book_uuid: create_book().await.id,
             costumer_uuid: create_costumer().await.id,
             borrowed_at: DEFAULT_BORROWED_DATE.unwrap(),
@@ -396,36 +396,36 @@ mod tests {
 
         let updated_rent: Rent = Rent::parse(payload_update_rent).unwrap();
 
-        db.update_rent(updated_rent.clone()).await.unwrap();
+        db.update_rental(updated_rent.clone()).await.unwrap();
 
-        let sql_result: Rent = db.get_rent(sql_rent_uuid).await.unwrap().unwrap();
+        let sql_result: Rent = db.get_rental(sql_rental_uuid).await.unwrap().unwrap();
 
         assert_eq!(sql_result, updated_rent);
     }
 
     #[sqlx::test]
-    async fn test_delete_rent() {
+    async fn test_delete_rental() {
         let db: Database = conn_db().await;
 
-        let rent: Rent = create_rent().await;
+        let rent: Rent = create_rental().await;
 
-        db.create_rent(rent.clone()).await.unwrap();
+        db.create_rental(rent.clone()).await.unwrap();
 
-        let sql_result_before: Option<Uuid> = db.get_rent_id(rent.id.clone()).await.unwrap();
+        let sql_result_before: Option<Uuid> = db.get_rental_id(rent.id.clone()).await.unwrap();
 
-        let sql_result_uuid: Uuid = db.delete_rent(rent.id).await.unwrap();
+        let sql_result_uuid: Uuid = db.delete_rental(rent.id).await.unwrap();
 
-        let sql_result_after: Option<Uuid> = db.get_rent_id(sql_result_uuid).await.unwrap();
+        let sql_result_after: Option<Uuid> = db.get_rental_id(sql_result_uuid).await.unwrap();
 
         assert!(sql_result_before.is_some());
         assert!(sql_result_after.is_none());
     }
 
     #[sqlx::test]
-    async fn test_count_rental() {
+    async fn test_count_rentals() {
         let db: Database = conn_db().await;
 
-        let sql_result: i64 = db.count_rental().await.unwrap();
+        let sql_result: i64 = db.count_rentals().await.unwrap();
 
         assert!(sql_result >= 0);
     }

@@ -359,7 +359,7 @@ mod option_date_format {
 pub mod author;
 pub mod book;
 pub mod costumer;
-pub mod rent;
+pub mod rental;
 
 pub use book_name::BookName;
 pub use editor_name::EditorName;
