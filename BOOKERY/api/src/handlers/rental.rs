@@ -256,7 +256,10 @@ mod tests {
 
         let rent_uuid: String = rent_created.json();
 
-        let res: TestResponse = server().await.get(&format!("/rental/get/{rent_uuid}")).await;
+        let res: TestResponse = server()
+            .await
+            .get(&format!("/rental/get/{rent_uuid}"))
+            .await;
 
         res.assert_status_ok();
     }

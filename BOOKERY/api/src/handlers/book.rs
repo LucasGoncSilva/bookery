@@ -25,7 +25,10 @@ pub async fn create_book(
     }
 }
 
-pub async fn get_book(State(db): State<DB>, Path(book_uuid): Path<Uuid>) -> ResultStatus<BookWithAuthor> {
+pub async fn get_book(
+    State(db): State<DB>,
+    Path(book_uuid): Path<Uuid>,
+) -> ResultStatus<BookWithAuthor> {
     match db.get_book(book_uuid).await {
         Ok(Some(book)) => Ok((StatusCode::OK, Json(book))),
         Ok(None) => Err(StatusCode::NOT_FOUND),
@@ -276,7 +279,10 @@ mod tests {
 
         let book_uuid: String = book_created.json();
 
-        let res: TestResponse = server().await.get(&format!("/book/get-raw/{book_uuid}")).await;
+        let res: TestResponse = server()
+            .await
+            .get(&format!("/book/get-raw/{book_uuid}"))
+            .await;
 
         res.assert_status_ok();
     }
@@ -336,7 +342,7 @@ mod tests {
 
         res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
     }
-    
+
     #[tokio::test]
     async fn test_search_books_raw_get_no_param() {
         create_book_on_server().await;
