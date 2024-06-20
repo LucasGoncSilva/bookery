@@ -44,8 +44,18 @@ pub async fn get_book_raw(State(db): State<DB>, Path(book_uuid): Path<Uuid>) -> 
 pub async fn search_books(
     State(db): State<DB>,
     Query(t): Query<QueryURL>,
-) -> ResultStatus<Vec<Book>> {
+) -> ResultStatus<Vec<BookWithAuthor>> {
     match db.search_books(t.token).await {
+        Ok(books_vec) => Ok((StatusCode::OK, Json(books_vec))),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
+pub async fn search_books_raw(
+    State(db): State<DB>,
+    Query(t): Query<QueryURL>,
+) -> ResultStatus<Vec<Book>> {
+    match db.search_books_raw(t.token).await {
         Ok(books_vec) => Ok((StatusCode::OK, Json(books_vec))),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
@@ -298,31 +308,77 @@ mod tests {
 
         let created_book_uuid: Uuid = create_res.json();
 
-        let created_book: Book = server()
+        let created_book: BookWithAuthor = server()
             .await
-            .get(&format!("/book/get-raw/{created_book_uuid}"))
+            .get(&format!("/book/get/{created_book_uuid}"))
             .await
             .json();
 
         let res: TestResponse = server().await.get("/book/search?token").await;
         res.assert_status_ok();
-        let res_json: Vec<Book> = res.json();
+        let res_json: Vec<BookWithAuthor> = res.json();
         assert!(res_json.contains(&created_book));
 
         let res: TestResponse = server().await.get("/book/search?token=").await;
         res.assert_status_ok();
-        let res_json: Vec<Book> = res.json();
+        let res_json: Vec<BookWithAuthor> = res.json();
         assert!(res_json.contains(&created_book));
 
         let res: TestResponse = server().await.get("/book/search?token=am").await;
         res.assert_status_ok();
-        let res_json: Vec<Book> = res.json();
+        let res_json: Vec<BookWithAuthor> = res.json();
         assert!(res_json.contains(&created_book));
     }
 
     #[tokio::test]
     async fn test_search_books_post() {
         let res: TestResponse = server().await.post("/book/search?token=am").await;
+
+        res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
+    }
+    
+    #[tokio::test]
+    async fn test_search_books_raw_get_no_param() {
+        create_book_on_server().await;
+
+        let res: TestResponse = server().await.get("/book/search-raw").await;
+        res.assert_status_bad_request();
+
+        let res: TestResponse = server().await.get("/book/search-raw?").await;
+        res.assert_status_bad_request();
+    }
+
+    #[tokio::test]
+    async fn test_search_books_raw_get_found() {
+        let create_res: TestResponse = create_book_on_server().await;
+
+        let created_book_uuid: Uuid = create_res.json();
+
+        let created_book: Book = server()
+            .await
+            .get(&format!("/book/get-raw/{created_book_uuid}"))
+            .await
+            .json();
+
+        let res: TestResponse = server().await.get("/book/search-raw?token").await;
+        res.assert_status_ok();
+        let res_json: Vec<Book> = res.json();
+        assert!(res_json.contains(&created_book));
+
+        let res: TestResponse = server().await.get("/book/search-raw?token=").await;
+        res.assert_status_ok();
+        let res_json: Vec<Book> = res.json();
+        assert!(res_json.contains(&created_book));
+
+        let res: TestResponse = server().await.get("/book/search-raw?token=am").await;
+        res.assert_status_ok();
+        let res_json: Vec<Book> = res.json();
+        assert!(res_json.contains(&created_book));
+    }
+
+    #[tokio::test]
+    async fn test_search_books_raw_post() {
+        let res: TestResponse = server().await.post("/book/search-raw?token=am").await;
 
         res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
     }

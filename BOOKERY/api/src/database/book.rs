@@ -37,7 +37,7 @@ impl Database {
         SELECT b.id as id, b.name as book_name, a.name as author_name, b.editor as book_editor, b.release as release
         FROM tbl_books b
         JOIN tbl_authors a
-        ON b.author_uuid = a.id 
+        ON b.author_uuid = a.id
         WHERE b.id = $1
         ",
         )
@@ -119,7 +119,45 @@ impl Database {
         Ok(book_uuid)
     }
 
-    pub async fn search_books(&self, token: String) -> ResultDB<Vec<Book>> {
+    pub async fn search_books(&self, token: String) -> ResultDB<Vec<BookWithAuthor>> {
+        let book_vec: Vec<BookWithAuthor> = sqlx::query(
+            "
+        SELECT b.id as id, b.name as book_name, a.name as author_name, b.editor as book_editor, b.release as release
+        FROM tbl_books b
+        JOIN tbl_authors a
+        ON b.author_uuid = a.id
+        WHERE a.name ILIKE $1
+        OR b.name ILIKE $1
+        OR b.editor ILIKE $1
+        ",
+        )
+        .bind(format!("%{token}%"))
+        .map(|row: PgRow| {
+            let name_parser: String = row.get("book_name");
+            let editor_parser: String = row.get("book_editor");
+            let author_name_parser: String = row.get("author_name");
+
+            let id: Uuid = row.get("id");
+            let name: BookName = BookName::try_from(name_parser).unwrap();
+            let author_name: PersonName = PersonName::try_from(author_name_parser).unwrap();
+            let editor: EditorName = EditorName::try_from(editor_parser).unwrap();
+            let release: Date = row.get("release");
+
+            BookWithAuthor {
+                id,
+                name,
+                author_name,
+                editor,
+                release,
+            }
+        })
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(book_vec)
+    }
+
+    pub async fn search_books_raw(&self, token: String) -> ResultDB<Vec<Book>> {
         let book_vec: Vec<Book> = sqlx::query(
             "
         SELECT id, name, author_uuid, editor, release
@@ -365,11 +403,17 @@ mod tests {
             token: "Nam".to_string(),
         };
 
-        db.create_book(book.clone()).await.unwrap();
+        let book_uuid: Uuid = db.create_book(book).await.unwrap();
 
-        let sql_result: Vec<Book> = db.search_books(token.token).await.unwrap();
+        let sql_result: Vec<BookWithAuthor> = db.search_books(token.token).await.unwrap();
 
-        assert!(sql_result.contains(&book));
+        assert!(sql_result.contains(&BookWithAuthor {
+            id: book_uuid,
+            name: BookName::try_from(DEFAULT_NAME.to_string()).unwrap(),
+            author_name: PersonName::try_from(DEFAULT_NAME.to_string()).unwrap(),
+            editor: EditorName::try_from(DEFAULT_EDITOR.to_string()).unwrap(),
+            release: DEFAULT_RELEASE.unwrap()
+        }));
     }
 
     #[sqlx::test]
@@ -382,11 +426,17 @@ mod tests {
             token: "nam".to_string(),
         };
 
-        db.create_book(book.clone()).await.unwrap();
+        let book_uuid: Uuid = db.create_book(book).await.unwrap();
 
-        let sql_result: Vec<Book> = db.search_books(token.token).await.unwrap();
+        let sql_result: Vec<BookWithAuthor> = db.search_books(token.token).await.unwrap();
 
-        assert!(sql_result.contains(&book));
+        assert!(sql_result.contains(&BookWithAuthor {
+            id: book_uuid,
+            name: BookName::try_from(DEFAULT_NAME.to_string()).unwrap(),
+            author_name: PersonName::try_from(DEFAULT_NAME.to_string()).unwrap(),
+            editor: EditorName::try_from(DEFAULT_EDITOR.to_string()).unwrap(),
+            release: DEFAULT_RELEASE.unwrap()
+        }));
     }
 
     #[sqlx::test]
@@ -399,9 +449,66 @@ mod tests {
             token: "foo".to_string(),
         };
 
+        let book_uuid: Uuid = db.create_book(book).await.unwrap();
+
+        let sql_result: Vec<BookWithAuthor> = db.search_books(token.token).await.unwrap();
+
+        assert!(!sql_result.contains(&BookWithAuthor {
+            id: book_uuid,
+            name: BookName::try_from(DEFAULT_NAME.to_string()).unwrap(),
+            author_name: PersonName::try_from(DEFAULT_NAME.to_string()).unwrap(),
+            editor: EditorName::try_from(DEFAULT_EDITOR.to_string()).unwrap(),
+            release: DEFAULT_RELEASE.unwrap()
+        }));
+    }
+
+    #[sqlx::test]
+    async fn test_search_books_raw_case_sensitive_found() {
+        let db: Database = conn_db().await;
+
+        let book: Book = create_book().await;
+
+        let token: QueryURL = QueryURL {
+            token: "Nam".to_string(),
+        };
+
         db.create_book(book.clone()).await.unwrap();
 
-        let sql_result: Vec<Book> = db.search_books(token.token).await.unwrap();
+        let sql_result: Vec<Book> = db.search_books_raw(token.token).await.unwrap();
+
+        assert!(sql_result.contains(&book));
+    }
+
+    #[sqlx::test]
+    async fn test_search_books_raw_case_insensitive_found() {
+        let db: Database = conn_db().await;
+
+        let book: Book = create_book().await;
+
+        let token: QueryURL = QueryURL {
+            token: "nam".to_string(),
+        };
+
+        db.create_book(book.clone()).await.unwrap();
+
+        let sql_result: Vec<Book> = db.search_books_raw(token.token).await.unwrap();
+
+        assert!(sql_result.contains(&book));
+    }
+
+    #[sqlx::test]
+    async fn test_search_books_raw_not_found() {
+        let db: Database = conn_db().await;
+
+        let book: Book = create_book().await;
+
+        let token: QueryURL = QueryURL {
+            token: "foo".to_string(),
+        };
+
+        db.create_book(book.clone()).await.unwrap();
+
+        let sql_result: Vec<Book> = db.search_books_raw(token.token).await.unwrap();
 
         assert!(!sql_result.contains(&book));
     }

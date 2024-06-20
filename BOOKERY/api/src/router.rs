@@ -15,13 +15,15 @@ use crate::{
         },
         book::{
             count_books, create_book, delete_book, get_book, get_book_raw, search_books,
-            update_book,
+            search_books_raw, update_book,
         },
         costumer::{
             count_costumers, create_costumer, delete_costumer, get_costumer, search_costumers,
             update_costumer,
         },
-        rental::{count_rentals, create_rental, delete_rental, get_rental, search_rentals, update_rental},
+        rental::{
+            count_rentals, create_rental, delete_rental, get_rental, search_rentals, update_rental,
+        },
     },
 };
 
@@ -39,6 +41,7 @@ pub fn router(db: Arc<Database>) -> Router {
         .route("/book/get/:id", get(get_book))
         .route("/book/get-raw/:id", get(get_book_raw))
         .route("/book/search", get(search_books))
+        .route("/book/search-raw", get(search_books_raw))
         .route("/book/update", post(update_book))
         .route("/book/delete", post(delete_book))
         .route("/book/count", get(count_books))
