@@ -2,13 +2,23 @@ use serde::{Deserialize, Serialize};
 use time::Date;
 use uuid::Uuid;
 
-use crate::structs::{BookName, ConversionError, EditorName};
+use crate::structs::{BookName, ConversionError, EditorName, PersonName};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Book {
     pub id: Uuid,
     pub name: BookName,
     pub author_uuid: Uuid,
+    pub editor: EditorName,
+    #[serde(with = "super::date_format")]
+    pub release: Date,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq)] // , Debug, Clone
+pub struct BookWithAuthor {
+    pub id: Uuid,
+    pub name: BookName,
+    pub author_name: PersonName,
     pub editor: EditorName,
     #[serde(with = "super::date_format")]
     pub release: Date,

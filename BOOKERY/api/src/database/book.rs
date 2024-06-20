@@ -3,6 +3,8 @@ use time::Date;
 use uuid::Uuid;
 
 use crate::database::{conn::Database, ResultDB};
+use crate::structs::book::BookWithAuthor;
+use crate::structs::PersonName;
 use crate::structs::{book::Book, BookName, EditorName};
 
 impl Database {
@@ -29,7 +31,43 @@ impl Database {
         Ok(book_uuid)
     }
 
-    pub async fn get_book(&self, book_uuid: Uuid) -> ResultDB<Option<Book>> {
+    pub async fn get_book(&self, book_uuid: Uuid) -> ResultDB<Option<BookWithAuthor>> {
+        let book: Option<BookWithAuthor> = sqlx::query(
+            "
+        SELECT b.id as id, b.name as book_name, a.name as author_name, b.editor as book_editor, b.release as release
+        FROM tbl_books b
+        JOIN tbl_authors a
+        ON b.author_uuid = a.id 
+        WHERE b.id = $1
+        ",
+        )
+        .bind(book_uuid)
+        .map(|row: PgRow| {
+            let name_parser: String = row.get("book_name");
+            let editor_parser: String = row.get("book_editor");
+            let author_name_parser: String = row.get("author_name");
+
+            let id: Uuid = row.get("id");
+            let name: BookName = BookName::try_from(name_parser).unwrap();
+            let author_name: PersonName = PersonName::try_from(author_name_parser).unwrap();
+            let editor: EditorName = EditorName::try_from(editor_parser).unwrap();
+            let release: Date = row.get("release");
+
+            BookWithAuthor {
+                id,
+                name,
+                author_name,
+                editor,
+                release,
+            }
+        })
+        .fetch_optional(&self.pool)
+        .await?;
+
+        Ok(book)
+    }
+
+    pub async fn get_book_raw(&self, book_uuid: Uuid) -> ResultDB<Option<Book>> {
         let book: Option<Book> = sqlx::query(
             "
         SELECT id, name, author_uuid, editor, release
@@ -215,8 +253,8 @@ mod tests {
 
         let payload_book: PayloadBook = PayloadBook {
             name: DEFAULT_NAME.to_string(),
-            editor: DEFAULT_EDITOR.to_string(),
             author_uuid,
+            editor: DEFAULT_EDITOR.to_string(),
             release: DEFAULT_RELEASE.unwrap(),
         };
 
@@ -242,11 +280,20 @@ mod tests {
 
         let book: Book = create_book().await;
 
-        let book_uuid: Uuid = db.create_book(book.clone()).await.unwrap();
+        let created_book_uuid: Uuid = db.create_book(book.clone()).await.unwrap();
 
-        let sql_result: Book = db.get_book(book_uuid.clone()).await.unwrap().unwrap();
+        let sql_result: BookWithAuthor = db.get_book(created_book_uuid).await.unwrap().unwrap();
 
-        assert_eq!(sql_result, book);
+        assert_eq!(
+            sql_result,
+            BookWithAuthor {
+                id: book.id,
+                name: book.name,
+                author_name: PersonName::try_from(DEFAULT_NAME.to_string()).unwrap(),
+                editor: book.editor,
+                release: book.release
+            }
+        );
     }
 
     #[sqlx::test]
@@ -255,7 +302,31 @@ mod tests {
 
         let book: Book = create_book().await;
 
-        let sql_result: Option<Book> = db.get_book(book.id.clone()).await.unwrap();
+        let sql_result: Option<BookWithAuthor> = db.get_book(book.id.clone()).await.unwrap();
+
+        assert!(sql_result.is_none());
+    }
+
+    #[sqlx::test]
+    async fn test_get_book_raw_found() {
+        let db: Database = conn_db().await;
+
+        let book: Book = create_book().await;
+
+        let book_uuid: Uuid = db.create_book(book.clone()).await.unwrap();
+
+        let sql_result: Book = db.get_book_raw(book_uuid.clone()).await.unwrap().unwrap();
+
+        assert_eq!(sql_result, book);
+    }
+
+    #[sqlx::test]
+    async fn test_get_book_raw_not_found() {
+        let db: Database = conn_db().await;
+
+        let book: Book = create_book().await;
+
+        let sql_result: Option<Book> = db.get_book_raw(book.id.clone()).await.unwrap();
 
         assert!(sql_result.is_none());
     }
@@ -355,7 +426,7 @@ mod tests {
             .await
             .unwrap();
 
-        let sql_result: Book = db.get_book(sql_book_uuid).await.unwrap().unwrap();
+        let sql_result: Book = db.get_book_raw(sql_book_uuid).await.unwrap().unwrap();
 
         assert_eq!(sql_result, book);
     }

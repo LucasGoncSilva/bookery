@@ -5,7 +5,7 @@ use axum::{extract::State, http::StatusCode, Json};
 use uuid::Uuid;
 
 use crate::database::conn::Database;
-use crate::structs::book::{Book, PayloadBook, PayloadUpdateBook};
+use crate::structs::book::{Book, BookWithAuthor, PayloadBook, PayloadUpdateBook};
 
 use super::{DeletingStruct, QueryURL};
 
@@ -25,8 +25,16 @@ pub async fn create_book(
     }
 }
 
-pub async fn get_book(State(db): State<DB>, Path(book_uuid): Path<Uuid>) -> ResultStatus<Book> {
+pub async fn get_book(State(db): State<DB>, Path(book_uuid): Path<Uuid>) -> ResultStatus<BookWithAuthor> {
     match db.get_book(book_uuid).await {
+        Ok(Some(book)) => Ok((StatusCode::OK, Json(book))),
+        Ok(None) => Err(StatusCode::NOT_FOUND),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
+pub async fn get_book_raw(State(db): State<DB>, Path(book_uuid): Path<Uuid>) -> ResultStatus<Book> {
+    match db.get_book_raw(book_uuid).await {
         Ok(Some(book)) => Ok((StatusCode::OK, Json(book))),
         Ok(None) => Err(StatusCode::NOT_FOUND),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
@@ -64,7 +72,7 @@ pub async fn delete_book(
     State(db): State<DB>,
     Json(incoming_struct): Json<DeletingStruct>,
 ) -> ResultStatus<String> {
-    match db.get_book(incoming_struct.id).await {
+    match db.get_book_raw(incoming_struct.id).await {
         Ok(Some(book)) => match db.delete_book(book.id).await {
             Ok(book_uuid) => Ok((
                 StatusCode::NO_CONTENT,
@@ -228,6 +236,52 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_get_book_raw_get_empty() {
+        let res: TestResponse = server().await.get("/book/get-raw/").await;
+
+        res.assert_status_not_found();
+    }
+
+    #[tokio::test]
+    async fn test_get_book_raw_get_invalid() {
+        let res: TestResponse = server().await.get("/book/get-raw/12345").await;
+
+        res.assert_status_bad_request();
+    }
+
+    #[tokio::test]
+    async fn test_get_book_raw_get_not_found() {
+        let example_uuid: Uuid = Uuid::new_v4();
+        let res: TestResponse = server()
+            .await
+            .get(&format!("/book/get-raw/{example_uuid}"))
+            .await;
+
+        res.assert_status_not_found();
+    }
+
+    #[tokio::test]
+    async fn test_get_book_raw_get_found() {
+        let book_created: TestResponse = create_book_on_server().await;
+
+        let book_uuid: String = book_created.json();
+
+        let res: TestResponse = server().await.get(&format!("/book/get-raw/{book_uuid}")).await;
+
+        res.assert_status_ok();
+    }
+
+    #[tokio::test]
+    async fn test_get_book_raw_post() {
+        let res: TestResponse = server()
+            .await
+            .post(&format!("/book/get-raw/{}", Uuid::new_v4()))
+            .await;
+
+        res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
+    }
+
+    #[tokio::test]
     async fn test_search_books_get_no_param() {
         create_book_on_server().await;
 
@@ -246,7 +300,7 @@ mod tests {
 
         let created_book: Book = server()
             .await
-            .get(&format!("/book/get/{created_book_uuid}"))
+            .get(&format!("/book/get-raw/{created_book_uuid}"))
             .await
             .json();
 
@@ -306,7 +360,7 @@ mod tests {
 
         let created_book: Book = server()
             .await
-            .get(&format!("/book/get/{created_book_uuid}"))
+            .get(&format!("/book/get-raw/{created_book_uuid}"))
             .await
             .json();
 
@@ -362,7 +416,7 @@ mod tests {
 
         let created_book: Book = server()
             .await
-            .get(&format!("/book/get/{created_book_uuid}"))
+            .get(&format!("/book/get-raw/{created_book_uuid}"))
             .await
             .json();
 
