@@ -2,10 +2,10 @@ use serde::{Deserialize, Serialize};
 use time::Date;
 use uuid::Uuid;
 
-use crate::structs::ConversionError;
+use crate::structs::{BookName, ConversionError, PersonName};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub struct Rent {
+pub struct Rental {
     pub id: Uuid,
     pub costumer_uuid: Uuid,
     pub book_uuid: Uuid,
@@ -17,8 +17,21 @@ pub struct Rent {
     pub returned_at: Option<Date>,
 }
 
+#[derive(Serialize, PartialEq, Debug, Deserialize)]
+pub struct RentalWithCostumerAndBook {
+    pub id: Uuid,
+    pub costumer_name: PersonName,
+    pub book_name: BookName,
+    #[serde(with = "super::date_format")]
+    pub borrowed_at: Date,
+    #[serde(with = "super::date_format")]
+    pub due_date: Date,
+    #[serde(with = "super::option_date_format")]
+    pub returned_at: Option<Date>,
+}
+
 #[derive(Deserialize, Serialize)]
-pub struct PayloadRent {
+pub struct PayloadRental {
     pub costumer_uuid: Uuid,
     pub book_uuid: Uuid,
     #[serde(with = "super::date_format")]
@@ -28,7 +41,7 @@ pub struct PayloadRent {
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct PayloadUpdateRent {
+pub struct PayloadUpdateRental {
     pub id: Uuid,
     pub costumer_uuid: Uuid,
     pub book_uuid: Uuid,
@@ -40,8 +53,8 @@ pub struct PayloadUpdateRent {
     pub returned_at: Option<Date>,
 }
 
-impl Rent {
-    pub fn create(new_rent: PayloadRent) -> Result<Self, ConversionError> {
+impl Rental {
+    pub fn create(new_rent: PayloadRental) -> Result<Self, ConversionError> {
         let id: Uuid = Uuid::new_v4();
 
         Ok(Self {
@@ -54,7 +67,7 @@ impl Rent {
         })
     }
 
-    pub fn parse(rent: PayloadUpdateRent) -> Result<Self, ConversionError> {
+    pub fn parse(rent: PayloadUpdateRental) -> Result<Self, ConversionError> {
         Ok(Self {
             id: rent.id,
             costumer_uuid: rent.costumer_uuid,
@@ -81,18 +94,18 @@ mod tests {
 
     #[test]
     fn test_create_rent() {
-        let payload_rent: PayloadRent = PayloadRent {
+        let payload_rent: PayloadRental = PayloadRental {
             book_uuid: Uuid::new_v4(),
             costumer_uuid: Uuid::new_v4(),
             borrowed_at: DEFAULT_BORROWED_DATE.unwrap(),
             due_date: DEFAULT_DUE_DATE.unwrap(),
         };
 
-        let rent: Rent = Rent::create(payload_rent).unwrap();
+        let rent: Rental = Rental::create(payload_rent).unwrap();
 
         assert_eq!(
             rent,
-            Rent {
+            Rental {
                 id: rent.id,
                 book_uuid: rent.book_uuid,
                 costumer_uuid: rent.costumer_uuid,
@@ -105,7 +118,7 @@ mod tests {
 
     #[test]
     fn test_parse_rent() {
-        let payload_update_rent: PayloadUpdateRent = PayloadUpdateRent {
+        let payload_update_rent: PayloadUpdateRental = PayloadUpdateRental {
             id: Uuid::new_v4(),
             book_uuid: Uuid::new_v4(),
             costumer_uuid: Uuid::new_v4(),
@@ -114,11 +127,11 @@ mod tests {
             returned_at: Some(DEFAULT_RETURNED_DATE.unwrap()),
         };
 
-        let rent: Rent = Rent::parse(payload_update_rent).unwrap();
+        let rent: Rental = Rental::parse(payload_update_rent).unwrap();
 
         assert_eq!(
             rent,
-            Rent {
+            Rental {
                 id: rent.id,
                 book_uuid: rent.book_uuid,
                 costumer_uuid: rent.costumer_uuid,

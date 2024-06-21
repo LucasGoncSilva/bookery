@@ -22,7 +22,8 @@ use crate::{
             update_costumer,
         },
         rental::{
-            count_rentals, create_rental, delete_rental, get_rental, search_rentals, update_rental,
+            count_rentals, create_rental, delete_rental, get_rental, get_rental_raw,
+            search_rentals_raw, update_rental,
         },
     },
 };
@@ -55,7 +56,8 @@ pub fn router(db: Arc<Database>) -> Router {
         // Rentals
         .route("/rental/create", post(create_rental))
         .route("/rental/get/:id", get(get_rental))
-        .route("/rental/search", get(search_rentals))
+        .route("/rental/get-raw/:id", get(get_rental_raw))
+        .route("/rental/search-raw", get(search_rentals_raw))
         .route("/rental/update", post(update_rental))
         .route("/rental/delete", post(delete_rental))
         .route("/rental/count", get(count_rentals))

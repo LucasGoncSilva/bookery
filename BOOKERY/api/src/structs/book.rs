@@ -14,7 +14,7 @@ pub struct Book {
     pub release: Date,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)] // , Debug, Clone
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct BookWithAuthor {
     pub id: Uuid,
     pub name: BookName,

@@ -5,7 +5,9 @@ use axum::{extract::State, http::StatusCode, Json};
 use uuid::Uuid;
 
 use crate::database::conn::Database;
-use crate::structs::rental::{PayloadRent, PayloadUpdateRent, Rent};
+use crate::structs::rental::{
+    PayloadRental, PayloadUpdateRental, Rental, RentalWithCostumerAndBook,
+};
 
 use super::{DeletingStruct, QueryURL};
 
@@ -14,30 +16,44 @@ type ResultStatus<T> = Result<(StatusCode, Json<T>), StatusCode>;
 
 pub async fn create_rental(
     State(db): State<DB>,
-    Json(incoming_rent): Json<PayloadRent>,
+    Json(incoming_rent): Json<PayloadRental>,
 ) -> ResultStatus<Uuid> {
-    match Rent::create(incoming_rent) {
+    match Rental::create(incoming_rent) {
         Ok(rental) => match db.create_rental(rental).await {
-            Ok(rent_uuid) => Ok((StatusCode::CREATED, Json(rent_uuid))),
+            Ok(rental_uuid) => Ok((StatusCode::CREATED, Json(rental_uuid))),
             Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
         },
         Err(_) => Err(StatusCode::UNPROCESSABLE_ENTITY),
     }
 }
 
-pub async fn get_rental(State(db): State<DB>, Path(rent_uuid): Path<Uuid>) -> ResultStatus<Rent> {
-    match db.get_rental(rent_uuid).await {
+pub async fn get_rental(
+    State(db): State<DB>,
+    Path(rental_uuid): Path<Uuid>,
+) -> ResultStatus<RentalWithCostumerAndBook> {
+    match db.get_rental(rental_uuid).await {
         Ok(Some(rental)) => Ok((StatusCode::OK, Json(rental))),
         Ok(None) => Err(StatusCode::NOT_FOUND),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }
 
-pub async fn search_rentals(
+pub async fn get_rental_raw(
+    State(db): State<DB>,
+    Path(rental_uuid): Path<Uuid>,
+) -> ResultStatus<Rental> {
+    match db.get_rental_raw(rental_uuid).await {
+        Ok(Some(rental)) => Ok((StatusCode::OK, Json(rental))),
+        Ok(None) => Err(StatusCode::NOT_FOUND),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
+pub async fn search_rentals_raw(
     State(db): State<DB>,
     Query(t): Query<QueryURL>,
-) -> ResultStatus<Vec<Rent>> {
-    match db.search_rentals(t.token).await {
+) -> ResultStatus<Vec<Rental>> {
+    match db.search_rentals_raw(t.token).await {
         Ok(rental_vec) => Ok((StatusCode::OK, Json(rental_vec))),
         Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
@@ -45,12 +61,12 @@ pub async fn search_rentals(
 
 pub async fn update_rental(
     State(db): State<DB>,
-    Json(payload_update_rent): Json<PayloadUpdateRent>,
+    Json(payload_update_rent): Json<PayloadUpdateRental>,
 ) -> ResultStatus<Uuid> {
     match db.get_rental_id(payload_update_rent.id).await {
-        Ok(Some(_rental_uuid)) => match Rent::parse(payload_update_rent) {
+        Ok(Some(_rental_uuid)) => match Rental::parse(payload_update_rent) {
             Ok(updated_rent) => match db.update_rental(updated_rent).await {
-                Ok(rent_uuid) => Ok((StatusCode::ACCEPTED, Json(rent_uuid))),
+                Ok(rental_uuid) => Ok((StatusCode::ACCEPTED, Json(rental_uuid))),
                 Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
             },
             Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
@@ -64,11 +80,11 @@ pub async fn delete_rental(
     State(db): State<DB>,
     Json(incoming_struct): Json<DeletingStruct>,
 ) -> ResultStatus<String> {
-    match db.get_rental(incoming_struct.id).await {
+    match db.get_rental_raw(incoming_struct.id).await {
         Ok(Some(rental)) => match db.delete_rental(rental.id).await {
-            Ok(rent_uuid) => Ok((
+            Ok(rental_uuid) => Ok((
                 StatusCode::NO_CONTENT,
-                Json(format!("Rent {rent_uuid} deleted")),
+                Json(format!("Rent {rental_uuid} deleted")),
             )),
             Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
         },
@@ -173,11 +189,11 @@ mod tests {
             .await
     }
 
-    async fn create_payload_rental() -> PayloadRent {
+    async fn create_payload_rental() -> PayloadRental {
         let book_uuid: Uuid = create_book_on_server().await.json();
         let costumer_uuid: Uuid = create_costumer_on_server().await.json();
 
-        PayloadRent {
+        PayloadRental {
             book_uuid,
             costumer_uuid,
             borrowed_at: DEFAULT_BORROWED_DATE.unwrap(),
@@ -254,11 +270,11 @@ mod tests {
     async fn test_get_rental_get_found() {
         let rent_created: TestResponse = create_rental_on_server().await;
 
-        let rent_uuid: String = rent_created.json();
+        let rental_uuid: String = rent_created.json();
 
         let res: TestResponse = server()
             .await
-            .get(&format!("/rental/get/{rent_uuid}"))
+            .get(&format!("/rental/get/{rental_uuid}"))
             .await;
 
         res.assert_status_ok();
@@ -275,53 +291,102 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_search_rental_get_no_param() {
-        create_rental_on_server().await;
+    async fn test_get_rental_raw_get_empty() {
+        let res: TestResponse = server().await.get("/rental/get-raw/").await;
 
-        let res: TestResponse = server().await.get("/rental/search").await;
-        res.assert_status_bad_request();
+        res.assert_status_not_found();
+    }
 
-        let res: TestResponse = server().await.get("/rental/search?").await;
+    #[tokio::test]
+    async fn test_get_rental_raw_get_invalid() {
+        let res: TestResponse = server().await.get("/rental/get-raw/12345").await;
+
         res.assert_status_bad_request();
     }
 
     #[tokio::test]
-    async fn test_search_rental_get_found() {
+    async fn test_get_rental_raw_get_not_found() {
+        let example_uuid: Uuid = Uuid::new_v4();
+        let res: TestResponse = server()
+            .await
+            .get(&format!("/rental/get-raw/{example_uuid}"))
+            .await;
+
+        res.assert_status_not_found();
+    }
+
+    #[tokio::test]
+    async fn test_get_rental_raw_get_found() {
+        let rent_created: TestResponse = create_rental_on_server().await;
+
+        let rental_uuid: String = rent_created.json();
+
+        let res: TestResponse = server()
+            .await
+            .get(&format!("/rental/get-raw/{rental_uuid}"))
+            .await;
+
+        res.assert_status_ok();
+    }
+
+    #[tokio::test]
+    async fn test_get_rental_raw_post() {
+        let res: TestResponse = server()
+            .await
+            .post(&format!("/rental/get-raw/{}", Uuid::new_v4()))
+            .await;
+
+        res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
+    }
+
+    #[tokio::test]
+    async fn test_search_rental_raw_get_no_param() {
+        create_rental_on_server().await;
+
+        let res: TestResponse = server().await.get("/rental/search-raw").await;
+        res.assert_status_bad_request();
+
+        let res: TestResponse = server().await.get("/rental/search-raw?").await;
+        res.assert_status_bad_request();
+    }
+
+    #[tokio::test]
+    async fn test_search_rental_raw_get_found() {
         let create_res: TestResponse = create_rental_on_server().await;
 
         let created_rental_uuid: Uuid = create_res.json();
 
-        let created_rent: Rent = server()
+        let created_rent: Rental = server()
             .await
-            .get(&format!("/rental/get/{created_rental_uuid}"))
+            .get(&format!("/rental/get-raw/{created_rental_uuid}"))
             .await
             .json();
 
-        let res: TestResponse = server().await.get("/rental/search?token").await;
+        let res: TestResponse = server().await.get("/rental/search-raw?token").await;
         res.assert_status_ok();
-        let res_json: Vec<Rent> = res.json();
+        let res_json: Vec<Rental> = res.json();
         assert!(res_json.contains(&created_rent));
 
-        let res: TestResponse = server().await.get("/rental/search?token=").await;
+        let res: TestResponse = server().await.get("/rental/search-raw?token=").await;
         res.assert_status_ok();
-        let res_json: Vec<Rent> = res.json();
+        let res_json: Vec<Rental> = res.json();
         assert!(res_json.contains(&created_rent));
 
         let res: TestResponse = server()
             .await
             .get(&format!(
-                "/rental/search?token={}",
+                "/rental/search-raw?token={}",
                 String::from(created_rent.book_uuid).chars().nth(2).unwrap()
             ))
             .await;
         res.assert_status_ok();
-        let res_json: Vec<Rent> = res.json();
+        let res_json: Vec<Rental> = res.json();
         assert!(res_json.contains(&created_rent));
     }
 
     #[tokio::test]
-    async fn test_search_rental_post() {
-        let res: TestResponse = server().await.post("/rental/search?token=am").await;
+    async fn test_search_rental_raw_post() {
+        let res: TestResponse = server().await.post("/rental/search-raw?token=am").await;
 
         res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
     }
@@ -357,7 +422,7 @@ mod tests {
 
         let created_rental_uuid: Uuid = create_res.json();
 
-        let payload_update_rent: PayloadUpdateRent = PayloadUpdateRent {
+        let payload_update_rent: PayloadUpdateRental = PayloadUpdateRental {
             id: created_rental_uuid,
             book_uuid: create_book_on_server().await.json(),
             costumer_uuid: create_costumer_on_server().await.json(),
@@ -406,7 +471,7 @@ mod tests {
 
         let created_rental_uuid: Uuid = create_res.json();
 
-        let payload_delete_rent: PayloadUpdateRent = PayloadUpdateRent {
+        let payload_delete_rent: PayloadUpdateRental = PayloadUpdateRental {
             id: created_rental_uuid.clone(),
             book_uuid: create_book_on_server().await.json(),
             costumer_uuid: create_costumer_on_server().await.json(),
