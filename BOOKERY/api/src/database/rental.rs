@@ -123,6 +123,46 @@ impl Database {
         Ok(rental_uuid)
     }
 
+    pub async fn search_rentals(&self, token: String) -> ResultDB<Vec<RentalWithCostumerAndBook>> {
+        let costumers_vec: Vec<RentalWithCostumerAndBook> = sqlx::query(
+            "
+            SELECT r.id as id, c.name as costumer_name, b.name as book_name, r.borrowed_at as borrowed_at, r.due_date as due_date, r.returned_at as returned_at
+            FROM tbl_rentals r
+            JOIN tbl_costumers c
+            ON r.costumer_uuid = c.id
+            JOIN tbl_books b
+            ON r.book_uuid = b.id
+            WHERE c.name ILIKE $1 OR b.name ILIKE $1
+        ",
+        )
+        .bind(format!("%{token}%"))
+        .map(|row: PgRow| {
+            let rental_costumer_name_parser: String = row.get("costumer_name");
+            let rental_book_name_parser: String = row.get("book_name");
+
+            let id: Uuid = row.get("id");
+            let costumer_name: PersonName =
+                PersonName::try_from(rental_costumer_name_parser).unwrap();
+            let book_name: BookName = BookName::try_from(rental_book_name_parser).unwrap();
+            let borrowed_at: Date = row.get("borrowed_at");
+            let due_date: Date = row.get("due_date");
+            let returned_at: Option<Date> = row.get("returned_at");
+
+            RentalWithCostumerAndBook {
+                id,
+                costumer_name,
+                book_name,
+                borrowed_at,
+                due_date,
+                returned_at,
+            }
+        })
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(costumers_vec)
+    }
+
     pub async fn search_rentals_raw(&self, token: String) -> ResultDB<Vec<Rental>> {
         let costumers_vec: Vec<Rental> = sqlx::query(
             "
@@ -411,6 +451,81 @@ mod tests {
         let sql_result: Option<Uuid> = db.get_rental_id(rental.id.clone()).await.unwrap();
 
         assert!(sql_result.is_none());
+    }
+
+    #[sqlx::test]
+    async fn test_search_rentals_case_sensitive_found() {
+        let db: Database = conn_db().await;
+
+        let rental: Rental = create_rental().await;
+
+        let token: QueryURL = QueryURL {
+            token: "Nam".to_string(),
+        };
+
+        db.create_rental(rental.clone()).await.unwrap();
+
+        let sql_result: Vec<RentalWithCostumerAndBook> =
+            db.search_rentals(token.token).await.unwrap();
+
+        assert!(sql_result.contains(&RentalWithCostumerAndBook {
+            id: rental.id,
+            costumer_name: PersonName::try_from(DEFAULT_NAME.to_string()).unwrap(),
+            book_name: BookName::try_from(DEFAULT_NAME.to_string()).unwrap(),
+            borrowed_at: DEFAULT_BORROWED_DATE.unwrap(),
+            due_date: DEFAULT_DUE_DATE.unwrap(),
+            returned_at: None,
+        }));
+    }
+
+    #[sqlx::test]
+    async fn test_search_rentals_case_insensitive_found() {
+        let db: Database = conn_db().await;
+
+        let rental: Rental = create_rental().await;
+
+        let token: QueryURL = QueryURL {
+            token: "nAM".to_string(),
+        };
+
+        db.create_rental(rental.clone()).await.unwrap();
+
+        let sql_result: Vec<RentalWithCostumerAndBook> =
+            db.search_rentals(token.token).await.unwrap();
+
+        assert!(sql_result.contains(&RentalWithCostumerAndBook {
+            id: rental.id.clone(),
+            costumer_name: PersonName::try_from(DEFAULT_NAME.to_string()).unwrap(),
+            book_name: BookName::try_from(DEFAULT_NAME.to_string()).unwrap(),
+            borrowed_at: DEFAULT_BORROWED_DATE.unwrap(),
+            due_date: DEFAULT_DUE_DATE.unwrap(),
+            returned_at: None,
+        }));
+    }
+
+    #[sqlx::test]
+    async fn test_search_rentals_not_found() {
+        let db: Database = conn_db().await;
+
+        let rental: Rental = create_rental().await;
+
+        let token: QueryURL = QueryURL {
+            token: "foo".to_string(),
+        };
+
+        db.create_rental(rental.clone()).await.unwrap();
+
+        let sql_result: Vec<RentalWithCostumerAndBook> =
+            db.search_rentals(token.token).await.unwrap();
+
+        assert!(!sql_result.contains(&RentalWithCostumerAndBook {
+            id: rental.id.clone(),
+            costumer_name: PersonName::try_from(DEFAULT_NAME.to_string()).unwrap(),
+            book_name: BookName::try_from(DEFAULT_NAME.to_string()).unwrap(),
+            borrowed_at: DEFAULT_BORROWED_DATE.unwrap(),
+            due_date: DEFAULT_DUE_DATE.unwrap(),
+            returned_at: None,
+        }));
     }
 
     #[sqlx::test]

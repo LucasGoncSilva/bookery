@@ -49,6 +49,16 @@ pub async fn get_rental_raw(
     }
 }
 
+pub async fn search_rentals(
+    State(db): State<DB>,
+    Query(t): Query<QueryURL>,
+) -> ResultStatus<Vec<RentalWithCostumerAndBook>> {
+    match db.search_rentals(t.token).await {
+        Ok(rental_vec) => Ok((StatusCode::OK, Json(rental_vec))),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
 pub async fn search_rentals_raw(
     State(db): State<DB>,
     Query(t): Query<QueryURL>,
@@ -335,6 +345,58 @@ mod tests {
             .await
             .post(&format!("/rental/get-raw/{}", Uuid::new_v4()))
             .await;
+
+        res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
+    }
+
+    #[tokio::test]
+    async fn test_search_rental_get_no_param() {
+        create_rental_on_server().await;
+
+        let res: TestResponse = server().await.get("/rental/search").await;
+        res.assert_status_bad_request();
+
+        let res: TestResponse = server().await.get("/rental/search?").await;
+        res.assert_status_bad_request();
+    }
+
+    #[tokio::test]
+    async fn test_search_rental_get_found() {
+        let create_res: TestResponse = create_rental_on_server().await;
+
+        let created_rental_uuid: Uuid = create_res.json();
+
+        let created_rent: RentalWithCostumerAndBook = server()
+            .await
+            .get(&format!("/rental/get/{created_rental_uuid}"))
+            .await
+            .json();
+
+        let res: TestResponse = server().await.get("/rental/search?token").await;
+        res.assert_status_ok();
+        let res_json: Vec<RentalWithCostumerAndBook> = res.json();
+        assert!(res_json.contains(&created_rent));
+
+        let res: TestResponse = server().await.get("/rental/search?token=").await;
+        res.assert_status_ok();
+        let res_json: Vec<RentalWithCostumerAndBook> = res.json();
+        assert!(res_json.contains(&created_rent));
+
+        let res: TestResponse = server()
+            .await
+            .get(&format!(
+                "/rental/search?token={}",
+                String::from(DEFAULT_NAME)
+            ))
+            .await;
+        res.assert_status_ok();
+        let res_json: Vec<RentalWithCostumerAndBook> = res.json();
+        assert!(res_json.contains(&created_rent));
+    }
+
+    #[tokio::test]
+    async fn test_search_rental_post() {
+        let res: TestResponse = server().await.post("/rental/search?token=am").await;
 
         res.assert_status(StatusCode::METHOD_NOT_ALLOWED);
     }
