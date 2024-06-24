@@ -1,5 +1,13 @@
+use std::sync::Arc;
+
+use axum::{http::StatusCode, Json};
 use serde::Deserialize;
 use uuid::Uuid;
+
+use crate::database::conn::Database;
+
+type DB = Arc<Database>;
+type ResultStatus<T> = Result<(StatusCode, Json<T>), StatusCode>;
 
 #[derive(Deserialize)]
 pub struct QueryURL {

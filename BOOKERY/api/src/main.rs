@@ -7,7 +7,6 @@ use tokio::net::TcpListener;
 mod database;
 mod handlers;
 mod router;
-mod structs;
 
 #[tokio::main]
 async fn main() {

@@ -3,7 +3,7 @@ use time::Date;
 use uuid::Uuid;
 
 use crate::database::{conn::Database, ResultDB};
-use crate::structs::{author::Author, PersonName};
+use shared::structs::{author::Author, PersonName};
 
 impl Database {
     pub async fn create_author(&self, author: Author) -> ResultDB<Uuid> {
@@ -157,10 +157,8 @@ mod tests {
 
     use time::{error::ComponentRange, Date, Month};
 
-    use crate::{
-        handlers::QueryURL,
-        structs::author::{PayloadAuthor, PayloadUpdateAuthor},
-    };
+    use crate::handlers::QueryURL;
+    use shared::structs::author::{PayloadAuthor, PayloadUpdateAuthor};
 
     const DEFAULT_NAME: &'static str = "Name";
     const DEFAULT_BORN: Result<Date, ComponentRange> =

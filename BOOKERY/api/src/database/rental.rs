@@ -3,8 +3,10 @@ use time::Date;
 use uuid::Uuid;
 
 use crate::database::{conn::Database, ResultDB};
-use crate::structs::rental::{Rental, RentalWithCostumerAndBook};
-use crate::structs::{BookName, PersonName};
+use shared::structs::{
+    rental::{Rental, RentalWithCostumerAndBook},
+    BookName, PersonName,
+};
 
 impl Database {
     pub async fn create_rental(&self, rental: Rental) -> ResultDB<Uuid> {
@@ -261,14 +263,12 @@ mod tests {
 
     use time::{error::ComponentRange, Date, Month};
 
-    use crate::{
-        handlers::QueryURL,
-        structs::{
-            author::{Author, PayloadAuthor},
-            book::{Book, PayloadBook},
-            costumer::{Costumer, PayloadCostumer},
-            rental::{PayloadRental, PayloadUpdateRental},
-        },
+    use crate::handlers::QueryURL;
+    use shared::structs::{
+        author::{Author, PayloadAuthor},
+        book::{Book, PayloadBook},
+        costumer::{Costumer, PayloadCostumer},
+        rental::{PayloadRental, PayloadUpdateRental},
     };
 
     const DEFAULT_NAME: &'static str = "Name";

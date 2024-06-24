@@ -1,12 +1,11 @@
 [package]
-name = "bookery-api"
+name = "shared"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-shared = { path = "../shared" }
 axum = "0.7.5"
 serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.117"
@@ -21,13 +20,3 @@ time = { version = "0.3.36", features = ["macros", "serde"] }
 tokio = { version = "1.37.0", features = ["rt-multi-thread"] }
 tower-http = { version = "0.5.2", features = ["cors"] }
 uuid = { version = "1.8.0", features = ["v4", "serde"] }
-
-[dev-dependencies]
-axum-test = "15.0.1"
-
-[profile.release]
-opt-level = 3
-strip = true
-panic = "abort"
-codegen-units = 1
-lto = true

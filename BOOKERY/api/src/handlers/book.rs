@@ -1,16 +1,13 @@
-use std::sync::Arc;
-
-use axum::extract::{Path, Query};
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{
+    extract::{Path, Query, State},
+    http::StatusCode,
+    Json,
+};
 use uuid::Uuid;
 
-use crate::database::conn::Database;
-use crate::structs::book::{Book, BookWithAuthor, PayloadBook, PayloadUpdateBook};
+use shared::structs::book::{Book, BookWithAuthor, PayloadBook, PayloadUpdateBook};
 
-use super::{DeletingStruct, QueryURL};
-
-type DB = Arc<Database>;
-type ResultStatus<T> = Result<(StatusCode, Json<T>), StatusCode>;
+use super::{DeletingStruct, QueryURL, ResultStatus, DB};
 
 pub async fn create_book(
     State(db): State<DB>,
@@ -109,15 +106,16 @@ pub async fn count_books(State(db): State<DB>) -> ResultStatus<i64> {
 mod tests {
     use super::*;
 
-    use std::env::var;
+    use std::{env::var, sync::Arc};
 
     use axum::Router;
     use axum_test::{TestResponse, TestServer};
     use serde_json::json;
     use time::{error::ComponentRange, Date, Month};
 
+    use crate::database::conn::Database;
     use crate::router::router;
-    use crate::structs::author::PayloadAuthor;
+    use shared::structs::author::PayloadAuthor;
 
     const DEFAULT_NAME: &'static str = "Name";
     const DEFAULT_EDITOR: &'static str = "Editor";

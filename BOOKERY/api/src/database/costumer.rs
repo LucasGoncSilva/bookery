@@ -3,7 +3,7 @@ use time::Date;
 use uuid::Uuid;
 
 use crate::database::{conn::Database, ResultDB};
-use crate::structs::{costumer::Costumer, PersonDocument, PersonName};
+use shared::structs::{costumer::Costumer, PersonDocument, PersonName};
 
 impl Database {
     pub async fn create_costumer(&self, costumer: Costumer) -> ResultDB<Uuid> {
@@ -173,10 +173,8 @@ mod tests {
 
     use time::{error::ComponentRange, Date, Month};
 
-    use crate::{
-        handlers::QueryURL,
-        structs::costumer::{PayloadCostumer, PayloadUpdateCostumer},
-    };
+    use crate::handlers::QueryURL;
+    use shared::structs::costumer::{PayloadCostumer, PayloadUpdateCostumer};
 
     const DEFAULT_NAME: &'static str = "Name";
     const DEFAULT_DOCUMENT: &'static str = "12345678901";

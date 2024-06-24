@@ -1,0 +1,10 @@
+[workspace]
+
+members = ["api", "shared"]
+
+[profile.release]
+opt-level = 3
+strip = true
+panic = "abort"
+codegen-units = 1
+lto = true

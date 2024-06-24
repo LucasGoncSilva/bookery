@@ -3,9 +3,10 @@ use time::Date;
 use uuid::Uuid;
 
 use crate::database::{conn::Database, ResultDB};
-use crate::structs::book::BookWithAuthor;
-use crate::structs::PersonName;
-use crate::structs::{book::Book, BookName, EditorName};
+use shared::structs::{
+    book::{Book, BookWithAuthor},
+    BookName, EditorName, PersonName,
+};
 
 impl Database {
     pub async fn create_book(&self, book: Book) -> ResultDB<Uuid> {
@@ -256,12 +257,10 @@ mod tests {
 
     use time::{error::ComponentRange, Date, Month};
 
-    use crate::{
-        handlers::QueryURL,
-        structs::{
-            author::{Author, PayloadAuthor},
-            book::{PayloadBook, PayloadUpdateBook},
-        },
+    use crate::handlers::QueryURL;
+    use shared::structs::{
+        author::{Author, PayloadAuthor},
+        book::{PayloadBook, PayloadUpdateBook},
     };
 
     const DEFAULT_NAME: &'static str = "Name";
