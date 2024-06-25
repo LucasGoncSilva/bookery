@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="./styles.css">
-  <script src="main.js"></script>
+  <script src="./main.js"></script>
 
   <title>Bookery</title>
 </head>
@@ -14,220 +14,78 @@
 <body>
   <header>
     <nav>
-      <button id="authors">Autores</button>
-      <button id="books">Livros</button>
-      <button id="costumers">Locadores</button>
-      <button id="borrows">Empréstimos</button>
+      <button data-module="Author" data-form="author-form" class="module-btn">Authors</button>
+      <button data-module="Book" data-form="book-form" class="module-btn">Books</button>
+      <button data-module="Costumer" data-form="costumer-form" class="module-btn">Costumers</button>
+      <button data-module="Rental" data-form="rental-form" class="module-btn">Rentals</button>
     </nav>
   </header>
 
   <main>
     <aside>
-      <h1>Módulo - Listagem</h1>
+      <!-- <div> -->
+      <h1>Listing <span class="module-name"></span></h1>
+
+      <form id="author-form">
+        <section>
+          <div>
+            <label for="name">Author's Name</label>
+            <input type="text" placeholder="Example Name" id="author-form-name">
+          </div>
+
+          <div>
+            <label for="born-from">Initial Date</label>
+            <input type="month" id="author-form-born-from">
+
+            <br>
+
+            <label for="born-until">Final Date</label>
+            <input type="month" id="author-form-born-until">
+          </div>
+        </section>
+
+        <input type="button" value="Search" id="author-form-submit" data-module="Author">
+      </form>
+
+      <form id="book-form">
+        <section>
+          <div>
+            <label for="book-form-name">Book's Name</label>
+            <input type="text" placeholder="Example Name" id="book-form-name">
+          </div>
+
+          <div>
+            <label for="book-form-born-from">Initial Date</label>
+            <input type="month" id="book-form-born-from">
+
+            <br>
+
+            <label for="book-form-born-until">Final Date</label>
+            <input type="month" id="book-form-born-until">
+          </div>
+        </section>
+
+        <input type="button" value="Search" id="book-form-submit" data-module="Book">
+      </form>
 
       <table>
-        <thead>
-          <tr>
-            <th>a</th>
-            <th>b</th>
-            <th>c</th>
-            <th>d</th>
-            <th>e</th>
-          </tr>
+        <thead id="table-head">
         </thead>
-        <tbody>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
-          <tr>
-            <td>a</td>
-            <td>b</td>
-            <td>c</td>
-            <td>d</td>
-            <td>e</td>
-          </tr>
+
+        <tbody id="table-body">
         </tbody>
       </table>
+      <!-- </div> -->
     </aside>
 
     <section id="ops">
-      <h1><span>Módulo</span> - Operações</h1>
+      <h1>Operating <span class="module-name"></span></h1>
+
+      <p id="output">test</p>
     </section>
   </main>
 
-  <footer>Desenvolvido por LucasGonc | Rust + Tauri</footer>
+  <footer>Developed by LucasGonc | Rust + Tauri</footer>
 </body>
 
 </html>

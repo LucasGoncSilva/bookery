@@ -58,26 +58,69 @@ body {
       width: 50%;
       height: 87vh;
       float: left;
-      direction: rtl;
       border-top: 0;
       border-right: 2px solid $separator;
       padding-bottom: 2rem;
       margin-right: 1rem;
       background-color: $background-color;
 
+      form {
+        display: inline-grid;
+
+        label {
+          font-size: 1rem;
+        }
+
+        input {
+          font-size: 0.9rem;
+          padding: auto 1rem;
+          height: 2rem;
+          width: 10rem;
+
+          &[type='text'] {
+            margin-bottom: 1rem;
+          }
+
+          &[type='month'] {
+            margin-bottom: 0.5rem;
+          }
+
+          &[type='button'] {
+            background-color: $secondary;
+            border: 2px solid $primary;
+            font-size: 1rem;
+            margin: 0.5rem auto 0;
+            cursor: pointer;
+            border: none;
+            padding: 0.5rem 2rem;
+            width: 10rem;
+            transition: 100ms;
+
+            &:hover {
+              background-color: lighten($color: $primary, $amount: 10);
+            }
+          }
+        }
+
+        section {
+          display: grid;
+          place-items: center;
+          grid-template-columns: auto auto;
+          gap: 1rem;
+        }
+      }
+
       table {
-        direction: ltr;
         font-family: arial, sans-serif;
-        margin: auto;
+        margin: 3rem auto 0;
         border-collapse: collapse;
-        height: 100%;
 
         td,
         th {
           border: 1px solid darken($color: $background-color, $amount: 5);
           text-align: left;
           padding: 8px;
-          width: 10rem;
+          min-width: 7rem;
         }
 
         thead,
