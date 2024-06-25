@@ -3,10 +3,12 @@ window.addEventListener("DOMContentLoaded", () => {
   const tableHead = document.getElementById("table-head");
   const output = document.getElementById("output");
 
-  function hideForms() {
+  function hideModules() {
     document.querySelectorAll("form").forEach((form) => {
       form.style.display = "none";
     });
+
+    tableHead.innerHTML = "";
   }
 
   async function getDataAPI(module) {
@@ -21,7 +23,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  hideForms();
+  hideModules();
 
   // Navbar btns
   document.querySelectorAll(".module-btn").forEach(function (btn) {
@@ -32,21 +34,32 @@ window.addEventListener("DOMContentLoaded", () => {
       });
 
       // Show module form
-      hideForms();
+      hideModules();
       document.getElementById(btn.dataset["form"]).style.display =
         "inline-grid";
     });
   });
 
-  document
-    .getElementById("author-form-submit")
-    .addEventListener("click", function () {
-      let name = document.getElementById("author-form-name").value;
-      let bornFrom = document.getElementById("author-form-born-from").value;
-      let bornUntil = document.getElementById("author-form-born-until").value;
+  // Search forms submit
+  document.querySelectorAll("form input[type='button']").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      switch (btn.dataset["module"]) {
+        case "Author":
+          output.textContent = "Author Switch";
+          break;
 
-      getDataAPI(this.dataset["module"]);
+        case "Book":
+          output.textContent = "Book Switch";
+          break;
 
-      output.textContent = name;
+        case "Costumer":
+          output.textContent = "Costumer Switch";
+          break;
+
+        case "Rental":
+          output.textContent = "Rental Switch";
+          break;
+      }
     });
+  });
 });

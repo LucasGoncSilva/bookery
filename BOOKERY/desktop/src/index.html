@@ -30,16 +30,19 @@
         <section>
           <div>
             <label for="name">Author's Name</label>
+            <br>
             <input type="text" placeholder="Example Name" id="author-form-name">
           </div>
 
           <div>
-            <label for="born-from">Initial Date</label>
+            <label for="born-from">Born From</label>
+            <br>
             <input type="month" id="author-form-born-from">
 
             <br>
 
-            <label for="born-until">Final Date</label>
+            <label for="born-until">Born Until</label>
+            <br>
             <input type="month" id="author-form-born-until">
           </div>
         </section>
@@ -50,22 +53,115 @@
       <form id="book-form">
         <section>
           <div>
-            <label for="book-form-name">Book's Name</label>
-            <input type="text" placeholder="Example Name" id="book-form-name">
-          </div>
-
-          <div>
-            <label for="book-form-born-from">Initial Date</label>
-            <input type="month" id="book-form-born-from">
+            <label for="book-form-book-name">Book's Name</label>
+            <br>
+            <input type="text" placeholder="Example Name" id="book-form-book-name">
 
             <br>
 
-            <label for="book-form-born-until">Final Date</label>
-            <input type="month" id="book-form-born-until">
+            <label for="book-form-author-name">Author's Name</label>
+            <br>
+            <input type="text" placeholder="Example Name" id="book-form-author-name">
+
+            <br>
+
+            <label for="book-form-editor-name">Editor's Name</label>
+            <br>
+            <input type="text" placeholder="Example Name" id="book-form-editor-name">
+          </div>
+
+          <div>
+            <label for="book-form-release-from">Release From</label>
+            <br>
+            <input type="month" id="book-form-release-from">
+
+            <br>
+
+            <label for="book-form-release-until">Release Until</label>
+            <br>
+            <input type="month" id="book-form-release-until">
           </div>
         </section>
 
         <input type="button" value="Search" id="book-form-submit" data-module="Book">
+      </form>
+
+      <form id="costumer-form">
+        <section>
+          <div>
+            <label for="costumer-form-name">Costumer's Name</label>
+            <br>
+            <input type="text" placeholder="Example Name" id="costumer-form-name">
+          </div>
+
+          <div>
+            <label for="costumer-form-born-from">Born From</label>
+            <br>
+            <input type="month" id="costumer-form-born-from">
+
+            <br>
+
+            <label for="costumer-form-born-until">Born Until</label>
+            <br>
+            <input type="month" id="costumer-form-born-until">
+          </div>
+        </section>
+
+        <input type="button" value="Search" id="costumer-form-submit" data-module="Costumer">
+      </form>
+
+      <form id="rental-form">
+        <section>
+          <div>
+            <label for="rental-form-costumer-name">Costumer's Name</label>
+            <br>
+            <input type="text" placeholder="Example Name" id="rental-form-costumer-name">
+
+            <br>
+
+            <label for="rental-form-book-name">Book's Name</label>
+            <br>
+            <input type="text" placeholder="Example Name" id="rental-form-book-name">
+          </div>
+
+          <div>
+            <label for="rental-form-borrow-from">Borrow From</label>
+            <br>
+            <input type="month" id="rental-form-borrow-from">
+
+            <br>
+
+            <label for="rental-form-borrow-until">Borrow Until</label>
+            <br>
+            <input type="month" id="rental-form-borrow-until">
+          </div>
+
+          <div>
+            <label for="rental-form-due-date-from">Due Date From</label>
+            <br>
+            <input type="month" id="rental-form-due-date-from">
+
+            <br>
+
+            <label for="rental-form-due-date-until">Due Date Until</label>
+            <br>
+            <input type="month" id="rental-form-due-date-until">
+          </div>
+
+          <div>
+            <label for="rental-form-returned-from">Returned From</label>
+            <br>
+            <input type="month" id="rental-form-returned-from">
+
+            <br>
+
+            <label for="rental-form-returned-until">Returned Until</label>
+            <br>
+            <input type="month" id="rental-form-returned-until">
+          </div>
+        </section>
+
+        <input type="button" value="Search" id="rental-form-submit" data-module="Rental">
       </form>
 
       <table>
