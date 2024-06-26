@@ -4,8 +4,8 @@ services:
       context: ..
       dockerfile: docker/DockerfileAPI
     volumes:
-      - ../BOOKERY/api:/app
-    command: bash -c "cargo run --release"
+      - ../BOOKERY:/app
+    command: bash -c "cargo run --bin bookery-api --release"
     ports:
       - "3000:3000"
     environment:

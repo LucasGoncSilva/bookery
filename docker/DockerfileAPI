@@ -1,7 +1,7 @@
-FROM rust:latest
+FROM rust:latest as build
 
 WORKDIR /app
 
-COPY /BOOKERY/api .
+COPY /BOOKERY/ .
 
-RUN cargo build --release
+RUN cargo build --bin bookery-api --release
