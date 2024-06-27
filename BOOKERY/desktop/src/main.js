@@ -1,7 +1,13 @@
 window.addEventListener("DOMContentLoaded", () => {
   const { invoke } = window.__TAURI__.tauri;
   const tableHead = document.getElementById("table-head");
-  const output = document.getElementById("output");
+  const tableBody = document.getElementById("table-body");
+  const dispatchSearchURL = {
+    Author: "create_table_body_search_author",
+    Book: "create_table_body_search_book",
+    Costumer: "create_table_body_search_costumer",
+    Rental: "create_table_body_search_rental",
+  };
 
   function hideModules() {
     document.querySelectorAll("form").forEach((form) => {
@@ -9,18 +15,25 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     tableHead.innerHTML = "";
+    tableBody.innerHTML = "";
   }
 
-  async function getDataAPI(module) {
+  async function createTableHead(module) {
     tableHead.innerHTML = "";
     tableHead.innerHTML = await invoke("create_table_head", {
       module: module,
     });
+  }
 
-    output.innerHTML = await invoke("handle_actual_endpoint", {
-      module: module,
-      action: "Search",
-    });
+  async function createTableBodySearch(module) {
+    tableBody.innerHTML = "";
+    const functionToCall = dispatchSearchURL[module];
+
+    try {
+      tableBody.innerHTML = await invoke(functionToCall, {});
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   hideModules();
@@ -43,22 +56,13 @@ window.addEventListener("DOMContentLoaded", () => {
   // Search forms submit
   document.querySelectorAll("form input[type='button']").forEach((btn) => {
     btn.addEventListener("click", () => {
-      switch (btn.dataset["module"]) {
-        case "Author":
-          output.textContent = "Author Switch";
-          break;
+      const module = btn.dataset["module"];
 
-        case "Book":
-          output.textContent = "Book Switch";
-          break;
-
-        case "Costumer":
-          output.textContent = "Costumer Switch";
-          break;
-
-        case "Rental":
-          output.textContent = "Rental Switch";
-          break;
+      try {
+        createTableHead(module);
+        createTableBodySearch(module);
+      } catch (err) {
+        console.log(err);
       }
     });
   });

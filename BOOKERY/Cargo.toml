@@ -1,6 +1,6 @@
 [workspace]
 
-members = ["api", "shared"]
+members = ["api", "shared", "desktop/src-tauri"]
 
 [profile.release]
 opt-level = 3
