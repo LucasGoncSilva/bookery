@@ -2,6 +2,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const { invoke } = window.__TAURI__.tauri;
   const tableHead = document.getElementById("table-head");
   const tableBody = document.getElementById("table-body");
+  const tableTotalSpan = document.getElementById("total-span");
   const dispatchSearchURL = {
     Author: "create_table_body_search_author",
     Book: "create_table_body_search_book",
@@ -16,6 +17,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     tableHead.innerHTML = "";
     tableBody.innerHTML = "";
+    tableTotalSpan.innerHTML = "Select a module and filter...";
   }
 
   async function createTableHead(module) {
@@ -30,7 +32,9 @@ window.addEventListener("DOMContentLoaded", () => {
     const functionToCall = dispatchSearchURL[module];
 
     try {
-      tableBody.innerHTML = await invoke(functionToCall, {});
+      const data = await invoke(functionToCall, {});
+      tableBody.innerHTML = data[0];
+      tableTotalSpan.innerHTML = data[1];
     } catch (err) {
       console.log(err);
     }

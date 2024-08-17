@@ -44,7 +44,7 @@ fn create_table_head(module: Module) -> &'static str {
 }
 
 #[tauri::command]
-async fn create_table_body_search_author() -> Result<String, &'static str> {
+async fn create_table_body_search_author() -> Result<(String, i64), &'static str> {
     let mut table_body_vec: Vec<String> = vec![];
     let endpoint: String = format!("{API_URL}/author/search?token=");
 
@@ -59,10 +59,10 @@ async fn create_table_body_search_author() -> Result<String, &'static str> {
     };
 
     if data.is_empty() {
-        return Ok("<tr><td>-</td><td>-</td></tr>".to_string());
+        return Ok(("<tr><td>-</td><td>-</td></tr>".to_string(), 0));
     }
 
-    for author in data {
+    for author in &data {
         table_body_vec.push(format!(
             "<tr><td>{}</td><td>{}</td></tr>",
             author.name.as_str(),
@@ -70,11 +70,11 @@ async fn create_table_body_search_author() -> Result<String, &'static str> {
         ));
     }
 
-    Ok(table_body_vec.join(""))
+    Ok((table_body_vec.join(""), data.len().try_into().unwrap()))
 }
 
 #[tauri::command]
-async fn create_table_body_search_book() -> Result<String, &'static str> {
+async fn create_table_body_search_book() -> Result<(String, i64), &'static str> {
     let mut table_body_vec: Vec<String> = vec![];
     let endpoint: String = format!("{API_URL}/book/search?token=");
 
@@ -89,10 +89,10 @@ async fn create_table_body_search_book() -> Result<String, &'static str> {
     };
 
     if data.is_empty() {
-        return Ok("<tr><td>-</td><td>-</td><td>-</td><td>-</td></tr>".to_string());
+        return Ok(("<tr><td>-</td><td>-</td><td>-</td><td>-</td></tr>".to_string(), 0));
     }
 
-    for book in data {
+    for book in &data {
         table_body_vec.push(format!(
             "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>",
             book.name.as_str(),
@@ -102,11 +102,11 @@ async fn create_table_body_search_book() -> Result<String, &'static str> {
         ));
     }
 
-    Ok(table_body_vec.join(""))
+    Ok((table_body_vec.join(""), data.len().try_into().unwrap()))
 }
 
 #[tauri::command]
-async fn create_table_body_search_costumer() -> Result<String, &'static str> {
+async fn create_table_body_search_costumer() -> Result<(String, i64), &'static str> {
     let mut table_body_vec: Vec<String> = vec![];
     let endpoint: String = format!("{API_URL}/costumer/search?token=");
 
@@ -121,10 +121,10 @@ async fn create_table_body_search_costumer() -> Result<String, &'static str> {
     };
 
     if data.is_empty() {
-        return Ok("<tr><td>-</td><td>-</td><td>-</td></tr>".to_string());
+        return Ok(("<tr><td>-</td><td>-</td><td>-</td></tr>".to_string(), 0));
     }
 
-    for costumer in data {
+    for costumer in &data {
         table_body_vec.push(format!(
             "<tr><td>{}</td><td>{}</td><td>{}</td></tr>",
             costumer.name.as_str(),
@@ -133,11 +133,11 @@ async fn create_table_body_search_costumer() -> Result<String, &'static str> {
         ));
     }
 
-    Ok(table_body_vec.join(""))
+    Ok((table_body_vec.join(""), data.iter().count().try_into().unwrap()))
 }
 
 #[tauri::command]
-async fn create_table_body_search_rental() -> Result<String, &'static str> {
+async fn create_table_body_search_rental() -> Result<(String, i64), &'static str> {
     let mut table_body_vec: Vec<String> = vec![];
     let endpoint: String = format!("{API_URL}/rental/search?token=");
 
@@ -153,10 +153,10 @@ async fn create_table_body_search_rental() -> Result<String, &'static str> {
         };
 
     if data.is_empty() {
-        return Ok("<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>".to_string());
+        return Ok(("<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>".to_string(), 0));
     }
 
-    for rental in data {
+    for rental in &data {
         let mut rental_returned_at: String = String::new();
 
         if rental.returned_at.is_none() {
@@ -175,5 +175,5 @@ async fn create_table_body_search_rental() -> Result<String, &'static str> {
         ));
     }
 
-    Ok(table_body_vec.join(""))
+    Ok((table_body_vec.join(""), data.len().try_into().unwrap()))
 }
