@@ -1,0 +1,34 @@
+name: Rust
+
+on: [push, fork, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Starts Database
+        run: docker run --name psql_bookery -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres
+
+      - name: Sets Env Vars
+        run: export API_URL="http://localhost:3000";export DATABASE_URL="postgres://postgres:postgres@localhost:5432/postgres"
+
+      - name: Navigate to Workspace
+        run: cd BOOKERY/
+
+      - name: Build Bins
+        run: cargo build --verbose
+
+      - name: Run tests
+        run: cargo test --verbose
