@@ -26,7 +26,7 @@ jobs:
         run: export API_URL="http://localhost:3000";export DATABASE_URL="postgres://postgres:postgres@localhost:5432/postgres"
 
       - name: Build Bins
-        run: cargo build --verbose
+        run: ls;cargo build --verbose
 
       - name: Run Tests
         run: cargo test --verbose
