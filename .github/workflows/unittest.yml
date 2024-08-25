@@ -11,6 +11,7 @@ jobs:
 
     steps:
       - name: Install Docker Compose
+        working-directory: ./BOOKERY
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
@@ -24,11 +25,8 @@ jobs:
       - name: Sets Env Vars
         run: export API_URL="http://localhost:3000";export DATABASE_URL="postgres://postgres:postgres@localhost:5432/postgres"
 
-      - name: Navigate to Workspace
-        run: cd BOOKERY/
-
       - name: Build Bins
-        run: ls; cargo build --verbose
+        run: cargo build --verbose
 
       - name: Run Tests
         run: cargo test --verbose
