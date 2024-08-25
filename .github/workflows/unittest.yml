@@ -25,4 +25,4 @@ jobs:
         run: export API_URL="http://localhost:3000";export DATABASE_URL="postgres://postgres:postgres@localhost:5432/postgres"
 
       - name: Run Tests
-        run: ls; cd BOOKERY; cargo build --verbose; cargo test --verbose
+        run: cd BOOKERY; cargo build; cargo test
