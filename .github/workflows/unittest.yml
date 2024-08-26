@@ -22,8 +22,5 @@ jobs:
       - name: Starts Database
         run: docker run --name psql_bookery -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -d postgres
 
-      - name: Sets Env Vars
-        run: export API_URL="http://localhost:3000";export DATABASE_URL="postgres://postgres:postgres@localhost:5432/postgres"
-
       - name: Run Tests
-        run: cd BOOKERY; cargo build; cargo test
+        run: cd BOOKERY;export API_URL="http://localhost:3000";export DATABASE_URL="postgres://postgres:postgres@localhost:5432/postgres";cargo build;cargo test
