@@ -99,143 +99,143 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         <tr>
             <td rowspan=6><code>Author</code></td>
             <td>Criar</td>
-            <td>$${\color{lightgreen}POST}$$</td>
+            <td style="color: green">POST</td>
             <td>/author/create</td>
         </tr>
         <tr>
             <td>Obter</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/author/get/:id</td>
         </tr>
         <tr>
             <td>Filtrar</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/author/search</td>
         </tr>
         <tr>
             <td>Atualizar</td>
-            <td>$${\color{lightgreen}POST}$$</td>
+            <td style="color: green">POST</td>
             <td>/author/update</td>
         </tr>
         <tr>
             <td>Deletar</td>
-            <td>$${\color{lightgreen}POST}$$</td>
+            <td style="color: green">POST</td>
             <td>/author/delete</td>
         </tr>
         <tr>
             <td>Contar</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/author/count</td>
         </tr>
         <tr>
             <td rowspan=8><code>Book</code></td>
             <td>Criar</td>
-            <td>$${\color{lightgreen}POST}$$</td>
+            <td style="color: green">POST</td>
             <td>/book/create</td>
         </tr>
         <tr>
             <td>Obter</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/book/get/:id</td>
         </tr>
         <tr>
             <td>Obter Bruto</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/book/get-raw/:id</td>
         </tr>
         <tr>
             <td>Filtrar</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/book/search</td>
         <tr>
             <td>Filtrar Bruto</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/book/search-raw</td>
         </tr>
         <tr>
             <td>Atualizar</td>
-            <td>$${\color{lightgreen}POST}$$</td>
+            <td style="color: green">POST</td>
             <td>/book/update</td>
         </tr>
         <tr>
             <td>Deletar</td>
-            <td>$${\color{lightgreen}POST}$$</td>
+            <td style="color: green">POST</td>
             <td>/book/delete</td>
         </tr>
         <tr>
             <td>Contar</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/book/count</td>
         </tr>
         <tr>
             <td rowspan=6><code>Costumer</code></td>
             <td>Criar</td>
-            <td>$${\color{lightgreen}POST}$$</td>
+            <td style="color: green">POST</td>
             <td>/costumer/create</td>
         </tr>
         <tr>
             <td>Obter</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/costumer/get/:id</td>
         </tr>
         <tr>
             <td>Filtrar</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/costumer/search</td>
         </tr>
         <tr>
             <td>Atualizar</td>
-            <td>$${\color{lightgreen}POST}$$</td>
+            <td style="color: green">POST</td>
             <td>/costumer/update</td>
         </tr>
         <tr>
             <td>Deletar</td>
-            <td>$${\color{lightgreen}POST}$$</td>
+            <td style="color: green">POST</td>
             <td>/costumer/delete</td>
         </tr>
         <tr>
             <td>Contar</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/costumer/count</td>
         </tr>
         <tr>
             <td rowspan=8><code>Rental</code></td>
             <td>Criar</td>
-            <td>$${\color{lightgreen}POST}$$</td>
+            <td style="color: green">POST</td>
             <td>/rental/create</td>
         </tr>
         <tr>
             <td>Obter</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/rental/get/:id</td>
         </tr>
         <tr>
             <td>Obter Bruto</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/rental/get-raw/:id</td>
         </tr>
         <tr>
             <td>Filtrar</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/rental/search</td>
         <tr>
             <td>Filtrar Bruto</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/rental/search-raw</td>
         </tr>
         <tr>
             <td>Atualizar</td>
-            <td>$${\color{lightgreen}POST}$$</td>
+            <td style="color: green">POST</td>
             <td>/rental/update</td>
         </tr>
         <tr>
             <td>Deletar</td>
-            <td>$${\color{lightgreen}POST}$$</td>
+            <td style="color: green">POST</td>
             <td>/rental/delete</td>
         </tr>
         <tr>
             <td>Contar</td>
-            <td>$${\color{lightgreen}GET}$$</td>
+            <td>GET</td>
             <td>/rental/count</td>
         </tr>
     </tbody>
