@@ -4,7 +4,7 @@
 </h1>
 
 ![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/bookery?labelColor=101010)
-<!-- ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/bookery/XXXXXX.yml?style=flat&labelColor=%23101010) -->
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/bookery/unittest.yml?style=flat&labelColor=%23101010)
 
 Criado em Axum e Tauti, Frameworks Rust para API e Desktop, respectivamente, Bookery é um mini-sistema desktop para bibliotecas realizarem o gerenciamento de seus livros e empréstimos.
 <br><br>
