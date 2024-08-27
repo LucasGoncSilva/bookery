@@ -79,3 +79,164 @@ Antes de iniciar com o desenvolvimento e os comandos, é importante definir as v
 `cargo run` para desenvolvimento
 
 `cargo run --release` para performance de produção
+
+<br>
+
+## Endpoints
+
+As rotas da API se dividem entre cada `struct` organizando-se por ações, além de se dividir através das próprias estruturas, é claro; acompanhe abaixo a organização para mais detalhes:
+
+<table>
+    <thead>
+        <tr>
+            <th>Struct</th>
+            <th>Ação</th>
+            <th>Método</th>
+            <th>Endpoint</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td rowspan=6>`Author`</td>
+            <td>Criar</td>
+            <td>POST</td>
+            <td>/author/create</td>
+        </tr>
+        <tr>
+            <td>Obter</td>
+            <td>GET</td>
+            <td>/author/get/:id</td>
+        </tr>
+        <tr>
+            <td>Filtrar</td>
+            <td>GET</td>
+            <td>/author/search</td>
+        </tr>
+        <tr>
+            <td>Atualizar</td>
+            <td>POST</td>
+            <td>/author/update</td>
+        </tr>
+        <tr>
+            <td>Deletar</td>
+            <td>POST</td>
+            <td>/author/delete</td>
+        </tr>
+        <tr>
+            <td>Contar</td>
+            <td>GET</td>
+            <td>/author/count</td>
+        </tr>
+        <tr>
+            <td rowspan=8>`Book`</td>
+            <td>Criar</td>
+            <td>POST</td>
+            <td>/book/create</td>
+        </tr>
+        <tr>
+            <td>Obter</td>
+            <td>GET</td>
+            <td>/book/get/:id</td>
+        </tr>
+        <tr>
+            <td>Obter Bruto</td>
+            <td>GET</td>
+            <td>/book/get-raw/:id</td>
+        </tr>
+        <tr>
+            <td>Filtrar</td>
+            <td>GET</td>
+            <td>/book/search</td>
+        <tr>
+            <td>Filtrar Bruto</td>
+            <td>GET</td>
+            <td>/book/search-raw</td>
+        </tr>
+        <tr>
+            <td>Atualizar</td>
+            <td>POST</td>
+            <td>/book/update</td>
+        </tr>
+        <tr>
+            <td>Deletar</td>
+            <td>POST</td>
+            <td>/book/delete</td>
+        </tr>
+        <tr>
+            <td>Contar</td>
+            <td>GET</td>
+            <td>/book/count</td>
+        </tr>
+        <tr>
+            <td rowspan=6>`Costumer`</td>
+            <td>Criar</td>
+            <td>POST</td>
+            <td>/costumer/create</td>
+        </tr>
+        <tr>
+            <td>Obter</td>
+            <td>GET</td>
+            <td>/costumer/get/:id</td>
+        </tr>
+        <tr>
+            <td>Filtrar</td>
+            <td>GET</td>
+            <td>/costumer/search</td>
+        </tr>
+        <tr>
+            <td>Atualizar</td>
+            <td>POST</td>
+            <td>/costumer/update</td>
+        </tr>
+        <tr>
+            <td>Deletar</td>
+            <td>POST</td>
+            <td>/costumer/delete</td>
+        </tr>
+        <tr>
+            <td>Contar</td>
+            <td>GET</td>
+            <td>/costumer/count</td>
+        </tr>
+        <tr>
+            <td rowspan=8>`Rental`</td>
+            <td>Criar</td>
+            <td>POST</td>
+            <td>/rental/create</td>
+        </tr>
+        <tr>
+            <td>Obter</td>
+            <td>GET</td>
+            <td>/rental/get/:id</td>
+        </tr>
+        <tr>
+            <td>Obter Bruto</td>
+            <td>GET</td>
+            <td>/rental/get-raw/:id</td>
+        </tr>
+        <tr>
+            <td>Filtrar</td>
+            <td>GET</td>
+            <td>/rental/search</td>
+        <tr>
+            <td>Filtrar Bruto</td>
+            <td>GET</td>
+            <td>/rental/search-raw</td>
+        </tr>
+        <tr>
+            <td>Atualizar</td>
+            <td>POST</td>
+            <td>/rental/update</td>
+        </tr>
+        <tr>
+            <td>Deletar</td>
+            <td>POST</td>
+            <td>/rental/delete</td>
+        </tr>
+        <tr>
+            <td>Contar</td>
+            <td>GET</td>
+            <td>/rental/count</td>
+        </tr>
+    </tbody>
+</table>

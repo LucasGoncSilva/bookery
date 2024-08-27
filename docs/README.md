@@ -35,16 +35,17 @@ Desenvolvido com um foco rigoroso em qualidade, o sistema é avaliado por mais d
 
 A arquitetura pode ser detalhada de forma geral em duas frentes: Desktop e API. Tratando a aplicação Desktop como cliente desta solução, será detalhada uma visão comportamental em escala "macro" seguindo o fluxo de dados sem focar no "micro", como cada ação de cada função. Acompanhe abaixo o fluxo geral de informações:
 
-- Desktop
-- API
-
 ![Arquitetura Geral](./arch.svg)
 
 <br>
 
 ## Observação
 
-Os detalhes de cada face do sistema estão descritos dentro de seus próprios módulos.
+Os detalhes de cada face do sistema estão descritos dentro de seus próprios módulos. Considere acessar os endereços abaixo para visualizar os detalhes da arquitetura de cada módulo:
+
+- [Arquitetura Desktop](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/desktop)
+- [Arquitetura API](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/api)
+- [Arquitetura Compartilhada](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/shared)
 
 <br>
 
