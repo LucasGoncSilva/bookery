@@ -99,7 +99,7 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         <tr>
             <td rowspan=6><code>Author</code></td>
             <td>Criar</td>
-            <td style="color: green">POST</td>
+            <td>POST</td>
             <td>/author/create</td>
         </tr>
         <tr>
@@ -114,12 +114,12 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         </tr>
         <tr>
             <td>Atualizar</td>
-            <td style="color: green">POST</td>
+            <td>POST</td>
             <td>/author/update</td>
         </tr>
         <tr>
             <td>Deletar</td>
-            <td style="color: green">POST</td>
+            <td>POST</td>
             <td>/author/delete</td>
         </tr>
         <tr>
@@ -130,7 +130,7 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         <tr>
             <td rowspan=8><code>Book</code></td>
             <td>Criar</td>
-            <td style="color: green">POST</td>
+            <td>POST</td>
             <td>/book/create</td>
         </tr>
         <tr>
@@ -154,12 +154,12 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         </tr>
         <tr>
             <td>Atualizar</td>
-            <td style="color: green">POST</td>
+            <td>POST</td>
             <td>/book/update</td>
         </tr>
         <tr>
             <td>Deletar</td>
-            <td style="color: green">POST</td>
+            <td>POST</td>
             <td>/book/delete</td>
         </tr>
         <tr>
@@ -170,7 +170,7 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         <tr>
             <td rowspan=6><code>Costumer</code></td>
             <td>Criar</td>
-            <td style="color: green">POST</td>
+            <td>POST</td>
             <td>/costumer/create</td>
         </tr>
         <tr>
@@ -185,12 +185,12 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         </tr>
         <tr>
             <td>Atualizar</td>
-            <td style="color: green">POST</td>
+            <td>POST</td>
             <td>/costumer/update</td>
         </tr>
         <tr>
             <td>Deletar</td>
-            <td style="color: green">POST</td>
+            <td>POST</td>
             <td>/costumer/delete</td>
         </tr>
         <tr>
@@ -201,7 +201,7 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         <tr>
             <td rowspan=8><code>Rental</code></td>
             <td>Criar</td>
-            <td style="color: green">POST</td>
+            <td>POST</td>
             <td>/rental/create</td>
         </tr>
         <tr>
@@ -225,12 +225,12 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         </tr>
         <tr>
             <td>Atualizar</td>
-            <td style="color: green">POST</td>
+            <td>POST</td>
             <td>/rental/update</td>
         </tr>
         <tr>
             <td>Deletar</td>
-            <td style="color: green">POST</td>
+            <td>POST</td>
             <td>/rental/delete</td>
         </tr>
         <tr>
