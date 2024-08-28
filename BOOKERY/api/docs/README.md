@@ -100,7 +100,7 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
             <td rowspan=6><pre>Author</pre></td>
             <td>Criar</td>
             <td>POST</td>
-            <td>/author/create</td>
+            <td><code>/author/create</code></td>
         </tr>
         <tr>
             <td>Obter</td>
@@ -110,38 +110,38 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         <tr>
             <td>Filtrar</td>
             <td>GET</td>
-            <td>/author/search</td>
+            <td><code>/author/search</code></td>
         </tr>
         <tr>
             <td>Atualizar</td>
             <td>POST</td>
-            <td>/author/update</td>
+            <td><code>/author/update</code></td>
         </tr>
         <tr>
             <td>Deletar</td>
             <td>POST</td>
-            <td>/author/delete</td>
+            <td><code>/author/delete</code></td>
         </tr>
         <tr>
             <td>Contar</td>
             <td>GET</td>
-            <td>/author/count</td>
+            <td><code>/author/count</code></td>
         </tr>
         <tr>
-            <td rowspan=8><code>Book</code></td>
+            <td rowspan=8><pre>Book</pre></td>
             <td>Criar</td>
             <td>POST</td>
-            <td>/book/create</td>
+            <td><code>/book/create</code></td>
         </tr>
         <tr>
             <td>Obter</td>
             <td>GET</td>
-            <td>/book/get/:id</td>
+            <td><code>/book/get/:id</code></td>
         </tr>
         <tr>
             <td>Obter Bruto</td>
             <td>GET</td>
-            <td>/book/get-raw/:id</td>
+            <td><code>/book/get-raw/:id</code></td>
         </tr>
         <tr>
             <td>Filtrar</td>
@@ -150,69 +150,69 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         <tr>
             <td>Filtrar Bruto</td>
             <td>GET</td>
-            <td>/book/search-raw</td>
+            <td><code>/book/search-raw</code></td>
         </tr>
         <tr>
             <td>Atualizar</td>
             <td>POST</td>
-            <td>/book/update</td>
+            <td><code>/book/update</code></td>
         </tr>
         <tr>
             <td>Deletar</td>
             <td>POST</td>
-            <td>/book/delete</td>
+            <td><code>/book/delete</code></td>
         </tr>
         <tr>
             <td>Contar</td>
             <td>GET</td>
-            <td>/book/count</td>
+            <td><code>/book/count</code></td>
         </tr>
         <tr>
-            <td rowspan=6><code>Costumer</code></td>
+            <td rowspan=6><pre>Costumer</pre></td>
             <td>Criar</td>
             <td>POST</td>
-            <td>/costumer/create</td>
+            <td><code>/costumer/create</code></td>
         </tr>
         <tr>
             <td>Obter</td>
             <td>GET</td>
-            <td>/costumer/get/:id</td>
+            <td><code>/costumer/get/:id</code></td>
         </tr>
         <tr>
             <td>Filtrar</td>
             <td>GET</td>
-            <td>/costumer/search</td>
+            <td><code>/costumer/search</code></td>
         </tr>
         <tr>
             <td>Atualizar</td>
             <td>POST</td>
-            <td>/costumer/update</td>
+            <td><code>/costumer/update</code></td>
         </tr>
         <tr>
             <td>Deletar</td>
             <td>POST</td>
-            <td>/costumer/delete</td>
+            <td><code>/costumer/delete</code></td>
         </tr>
         <tr>
             <td>Contar</td>
             <td>GET</td>
-            <td>/costumer/count</td>
+            <td><code>/costumer/count</code></td>
         </tr>
         <tr>
-            <td rowspan=8><code>Rental</code></td>
+            <td rowspan=8><pre>Rental</pre></td>
             <td>Criar</td>
             <td>POST</td>
-            <td>/rental/create</td>
+            <td><code>/rental/create</code></td>
         </tr>
         <tr>
             <td>Obter</td>
             <td>GET</td>
-            <td>/rental/get/:id</td>
+            <td><code>/rental/get/:id</code></td>
         </tr>
         <tr>
             <td>Obter Bruto</td>
             <td>GET</td>
-            <td>/rental/get-raw/:id</td>
+            <td><code>/rental/get-raw/:id</code></td>
         </tr>
         <tr>
             <td>Filtrar</td>
@@ -221,22 +221,22 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         <tr>
             <td>Filtrar Bruto</td>
             <td>GET</td>
-            <td>/rental/search-raw</td>
+            <td><code>/rental/search-raw</code></td>
         </tr>
         <tr>
             <td>Atualizar</td>
             <td>POST</td>
-            <td>/rental/update</td>
+            <td><code>/rental/update</code></td>
         </tr>
         <tr>
             <td>Deletar</td>
             <td>POST</td>
-            <td>/rental/delete</td>
+            <td><code>/rental/delete</code></td>
         </tr>
         <tr>
             <td>Contar</td>
             <td>GET</td>
-            <td>/rental/count</td>
+            <td><code>/rental/count</code></td>
         </tr>
     </tbody>
 </table>
