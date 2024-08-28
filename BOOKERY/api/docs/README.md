@@ -97,7 +97,7 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
     </thead>
     <tbody>
         <tr>
-            <td rowspan=6><code>Author</code></td>
+            <td rowspan=6><pre>Author</pre></td>
             <td>Criar</td>
             <td>POST</td>
             <td>/author/create</td>
@@ -105,7 +105,7 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         <tr>
             <td>Obter</td>
             <td>GET</td>
-            <td>/author/get/:id</td>
+            <td><code>/author/get/:id</code></td>
         </tr>
         <tr>
             <td>Filtrar</td>
