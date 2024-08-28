@@ -64,9 +64,9 @@ O fluxo acima ocorre - no Desktop - todo agrupado, compilado e gerado em um úni
 
 Antes de iniciar com o desenvolvimento e os comandos, é importante definir as variáveis de ambiente no seu ambiente de desenvolvimento. Abaixo a listagem de quais definir:
 
-| Variável  | Caráter           | Responsabilidade                                                                              |
-| :-------- | :---------------- | :-------------------------------------------------------------------------------------------- |
-| `API_URL` | `&str - required` | String de conexão com a API<br>Default `postgres://postgres:postgres@localhost:5432/postgres` |
+| Variável  | Caráter           | Responsabilidade            |
+| :-------- | :---------------- | :-------------------------- |
+| `API_URL` | `&str - required` | String de conexão com a API |
 
 <!-- ### Iniciar Testes Automatizados
 
