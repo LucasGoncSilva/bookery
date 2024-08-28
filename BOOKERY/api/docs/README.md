@@ -4,10 +4,8 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/bookery/unittest.yml?style=flat&labelColor=%23101010)
 
 Rodando do lado do servidor, a API realiza o processamento dos dados, indo e vindo, para a aplicação Desktop e para o Banco de Dados.
-<br><br>
-Sua estrutura de arquivos reflete sua estrutura de processamento, suas rotas e interações com o banco de dados. Cada diretório possui arquivos cujo nome de cada arquivo define a qual `struct` - modelo do Banco de Dados - este arquivo trata dentro da lógica definida por seu diretório.
 
-<br>
+Sua estrutura de arquivos reflete sua estrutura de processamento, suas rotas e interações com o banco de dados. Cada diretório possui arquivos cujo nome de cada arquivo define a qual `struct` - modelo do Banco de Dados - este arquivo trata dentro da lógica definida por seu diretório.
 
 ## Stack
 
@@ -17,8 +15,6 @@ Sua estrutura de arquivos reflete sua estrutura de processamento, suas rotas e i
 
 ![Docker logo](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 
-<br>
-
 ## Arquitetura
 
 A API do Bookery utiliza do Princípio de Responsabilidade Única - Single-Responsability Principle - aplicada ao escopo de arquivos individuais - Single-File Component - de modo que no diretório "images", por exemplo, um arquivo chamado "png.rs" seja um arquivo Rust especializado no processamento de imagens do tipo PNG, apenas. De forma prática pode-se observar a seguinte estrutura:
@@ -26,6 +22,10 @@ A API do Bookery utiliza do Princípio de Responsabilidade Única - Single-Respo
 ```bash
 .
 ├── Cargo.toml                                # Arquivo de dependências do projeto
+│
+├── docs                                      # Diretório da documentação
+│   ├── README.md                             # Arquivo principal de leitura
+│   └── ...                                   # Demais arquivos úteis para documentação
 │
 └── src                                       # Diretório do código-fonte
     │
@@ -56,11 +56,9 @@ A API do Bookery utiliza do Princípio de Responsabilidade Única - Single-Respo
 
 A arquitetura da API vista em detalhes, tendo o Desktop como cliente e acessando o Banco de Dados, ainda em escala macro mas observando com mais detalhes o Back-end da aplicação, temos então a seguinte situação:
 
-![Arquitetura Geral](./arch_api_detailed.svg)
+![Arquitetura Geral](./arch.svg)
 
 O fluxo acima ocorre - na API - todo a partir do `main.rs`, podendo interpretá-lo como a própria box de "APP" no esquema acima, visto que tudo quando compilado é estruturado e organizado através da variável `app`, na declaração `let app: Router = router::router(db);` dentro do arquivo informado anteriormente.
-
-<br>
 
 ## Básico
 
@@ -80,8 +78,6 @@ Antes de iniciar com o desenvolvimento e os comandos, é importante definir as v
 
 `cargo run --release` para performance de produção
 
-<br>
-
 ## Endpoints
 
 As rotas da API se dividem entre cada `struct` organizando-se por ações, além de se dividir através das próprias estruturas, é claro; acompanhe abaixo a organização para mais detalhes:
@@ -97,7 +93,7 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
     </thead>
     <tbody>
         <tr>
-            <td rowspan=6><pre>Author</pre></td>
+            <td rowspan=6>Author</td>
             <td>Criar</td>
             <td>POST</td>
             <td><code>/author/create</code></td>
@@ -128,7 +124,7 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
             <td><code>/author/count</code></td>
         </tr>
         <tr>
-            <td rowspan=8><pre>Book</pre></td>
+            <td rowspan=8>Book</td>
             <td>Criar</td>
             <td>POST</td>
             <td><code>/book/create</code></td>
@@ -146,8 +142,8 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         <tr>
             <td>Filtrar</td>
             <td>GET</td>
-            <td>/book/search</td>
-        <tr>
+            <td><code>/book/search</code></td>
+        </tr>
             <td>Filtrar Bruto</td>
             <td>GET</td>
             <td><code>/book/search-raw</code></td>
@@ -168,7 +164,7 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
             <td><code>/book/count</code></td>
         </tr>
         <tr>
-            <td rowspan=6><pre>Costumer</pre></td>
+            <td rowspan=6>Costumer</td>
             <td>Criar</td>
             <td>POST</td>
             <td><code>/costumer/create</code></td>
@@ -199,7 +195,7 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
             <td><code>/costumer/count</code></td>
         </tr>
         <tr>
-            <td rowspan=8><pre>Rental</pre></td>
+            <td rowspan=8>Rental</td>
             <td>Criar</td>
             <td>POST</td>
             <td><code>/rental/create</code></td>
@@ -217,8 +213,8 @@ As rotas da API se dividem entre cada `struct` organizando-se por ações, além
         <tr>
             <td>Filtrar</td>
             <td>GET</td>
-            <td>/rental/search</td>
-        <tr>
+            <td><code>/rental/search</code></td>
+        </tr>
             <td>Filtrar Bruto</td>
             <td>GET</td>
             <td><code>/rental/search-raw</code></td>

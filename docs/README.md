@@ -7,12 +7,10 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/bookery/unittest.yml?style=flat&labelColor=%23101010)
 
 Criado em Axum e Tauti, Frameworks Rust para API e Desktop, respectivamente, Bookery é um mini-sistema desktop para bibliotecas realizarem o gerenciamento de seus livros e empréstimos.
-<br><br>
-O Bookery permite o cadastro e a busca eficiente de autores, livros, clientes e aluguéis, oferecendo uma experiência completa de gerenciamento com filtros avançados, opções de edição e uma interface intuitiva. Cada funcionalidade foi projetada para garantir que bibliotecas possam administrar suas coleções e transações de maneira ágil e precisa.
-<br><br>
-Desenvolvido com um foco rigoroso em qualidade, o sistema é avaliado por mais de 140 testes automatizados, garantindo robustez e confiabilidade. Aproveitando a eficiência do Rust, o Bookery supera soluções como o Electron em termos de processamento e uso de memória, enquanto a API em Axum proporciona uma performance comparável a C/C++, oferecendo um desempenho superior com simplicidade e eficácia.
 
-<br>
+O Bookery permite o cadastro e a busca eficiente de autores, livros, clientes e aluguéis, oferecendo uma experiência completa de gerenciamento com filtros avançados, opções de edição e uma interface intuitiva. Cada funcionalidade foi projetada para garantir que bibliotecas possam administrar suas coleções e transações de maneira ágil e precisa.
+
+Desenvolvido com um foco rigoroso em qualidade, o sistema é avaliado por mais de 140 testes automatizados, garantindo robustez e confiabilidade. Aproveitando a eficiência do Rust, o Bookery supera soluções como o Electron em termos de processamento e uso de memória, enquanto a API em Axum proporciona uma performance perfeitamente comparável a C/C++, oferecendo um desempenho elevado com simplicidade e eficiência.
 
 ## Stack
 
@@ -29,25 +27,19 @@ Desenvolvido com um foco rigoroso em qualidade, o sistema é avaliado por mais d
 
 ![Docker logo](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 
-<br>
-
 ## Arquitetura
 
 A arquitetura pode ser detalhada de forma geral em duas frentes: Desktop e API. Tratando a aplicação Desktop como cliente desta solução, será detalhada uma visão comportamental em escala "macro" seguindo o fluxo de dados sem focar no "micro", como cada ação de cada função. Acompanhe abaixo o fluxo geral de informações:
 
 ![Arquitetura Geral](./arch.svg)
 
-<br>
+## Detalhes
 
-## Observação
+Por razões organizacionais, a fim de que seja mantida a coerência na documentação do Bookery, os detalhes de cada face do sistema estão descritos dentro de seus próprios módulos. Considere acessar os endereços abaixo para visualizar os detalhes da arquitetura de cada módulo:
 
-Os detalhes de cada face do sistema estão descritos dentro de seus próprios módulos. Considere acessar os endereços abaixo para visualizar os detalhes da arquitetura de cada módulo:
-
-- [Arquitetura Desktop](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/desktop)
-- [Arquitetura API](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/api)
-- [Arquitetura Compartilhada](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/shared)
-
-<br>
+- [Arquitetura Desktop](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/desktop) - Cliente da solução, parte que roda na máquina do usuário
+- [Arquitetura API](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/api) - Servidor da solução, lado mantido na nuvem
+- [Arquitetura Compartilhada](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/shared) - Hub de estruturas compartilhadas entre os módulos supracitados
 
 ## Licença
 
