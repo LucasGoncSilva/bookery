@@ -56,7 +56,69 @@ A API do Bookery utiliza do Princípio de Responsabilidade Única - Single-Respo
 
 A arquitetura da API vista em detalhes, tendo o Desktop como cliente e acessando o Banco de Dados, ainda em escala macro mas observando com mais detalhes o Back-end da aplicação, temos então a seguinte situação:
 
-![Arquitetura Geral](./arch.svg)
+<!-- ![Arquitetura Geral](./arch.svg) -->
+
+```mermaid
+flowchart TB
+
+
+subgraph CLOUD
+    subgraph PERSISTENCE
+        Database[(Database)]:::Arch
+    end
+
+    subgraph APP
+        API{{API}}:::Arch
+    end
+end
+
+subgraph DESKTOP
+    HTML(index.html):::Arch
+
+    CSS[[styles.css]]:::Arch
+    SCSS[[styles.scss]]:::Arch
+    CSSMAP[[styles.css.map]]:::Arch
+
+    JS[[main.js]]:::Arch
+
+    RS(main.rs):::Arch
+end
+
+User(((User)))
+
+
+User --> HTML
+
+SCSS & CSSMAP -.-> CSS
+JS & CSS -.-> HTML
+
+HTML --> RS
+
+RS ~~~ API
+RS --> API
+API --> Database
+Database --> API
+Database ~~~ API
+Database ~~~ API
+API --> RS
+
+RS --> HTML
+HTML --> User
+
+
+style CLOUD fill:#ccc7,color:#800,stroke:#800;
+style APP fill:#ccc7,color:#800,stroke:#800;
+style PERSISTENCE fill:#ccc7,color:#800,stroke:#800;
+style DESKTOP fill:#ccc7,color:#800,stroke:#800;
+
+style User fill:#fff,color:#800,stroke:#800;
+
+classDef Arch fill:#800,color:#efe,stroke:#efe;
+
+linkStyle 1,2,3,4 stroke:#fff
+linkStyle 5,6,7,8,0 stroke:#f00
+linkStyle default stroke:#800
+```
 
 O fluxo acima ocorre - na API - todo a partir do `main.rs`, podendo interpretá-lo como a própria box de "APP" no esquema acima, visto que tudo quando compilado é estruturado e organizado através da variável `app`, na declaração `let app: Router = router::router(db);` dentro do arquivo informado anteriormente.
 

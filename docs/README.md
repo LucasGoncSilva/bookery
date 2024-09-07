@@ -6,7 +6,7 @@
 ![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/bookery?labelColor=101010)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/bookery/unittest.yml?style=flat&labelColor=%23101010)
 
-Criado em Axum e Tauti, Frameworks Rust para API e Desktop, respectivamente, Bookery é um mini-sistema desktop para bibliotecas realizarem o gerenciamento de seus livros e empréstimos.
+Criado em Axum e Tauri, Frameworks Rust para API e Desktop, respectivamente, Bookery é um mini-sistema desktop para bibliotecas realizarem o gerenciamento de seus livros e empréstimos.
 
 O Bookery permite o cadastro e a busca eficiente de autores, livros, clientes e aluguéis, oferecendo uma experiência completa de gerenciamento com filtros avançados, opções de edição e uma interface intuitiva. Cada funcionalidade foi projetada para garantir que bibliotecas possam administrar suas coleções e transações de maneira ágil e precisa.
 
@@ -31,7 +31,42 @@ Desenvolvido com um foco rigoroso em qualidade, o sistema é avaliado por mais d
 
 A arquitetura pode ser detalhada de forma geral em duas frentes: Desktop e API. Tratando a aplicação Desktop como cliente desta solução, será detalhada uma visão comportamental em escala "macro" seguindo o fluxo de dados sem focar no "micro", como cada ação de cada função. Acompanhe abaixo o fluxo geral de informações:
 
-![Arquitetura Geral](./arch.svg)
+<!-- ![Arquitetura Geral](./arch.svg) -->
+
+```mermaid
+flowchart RL
+
+
+subgraph CLOUD
+    subgraph APP
+        API{{API}}:::Arch
+    end
+
+    subgraph PERSISTENCE
+        Database[(Database)]:::Arch
+    end
+end
+
+Desktop[Desktop]
+
+
+Desktop --> API
+API --> Database
+Database --> API
+API --> Desktop
+
+
+style CLOUD fill:#ccc7,color:#800,stroke:#800;
+style APP fill:#ccc7,color:#800,stroke:#800;
+style PERSISTENCE fill:#ccc7,color:#800,stroke:#800;
+
+style Desktop fill:#800000,color:#fff,stroke:#fff;
+
+classDef Arch fill:#800,color:#efe,stroke:#efe;
+
+linkStyle 0,1 stroke:#f00
+linkStyle default stroke:#800
+```
 
 ## Detalhes
 

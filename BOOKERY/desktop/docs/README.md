@@ -44,7 +44,7 @@ O Desktop do Bookery apresenta a arquitetura padrão de um projeto Tauri, defini
     ├── icons                                 # Diretório de ícones da aplicação
     │   ├── *.icns                            # Arquivos de ícones no format .icns
     │   ├── *.ico                             # Arquivos de ícones no format .ico
-    │   └── *.png                             # Arquivos de ícones no format .icns
+    │   └── *.png                             # Arquivos de ícones no format .png
     │
     ├── tauri.conf.json                       # Arquivo de auxílio e configuração de biuld
     │
@@ -56,7 +56,69 @@ O Desktop do Bookery apresenta a arquitetura padrão de um projeto Tauri, defini
 
 A arquitetura do Desktop vista em detalhes, tendo a API como servidor que, por sua vez, conforme necessidade acessa o Banco de Dados; ainda em escala macro mas observando com mais detalhes o Front-end da aplicação, temos então a seguinte situação:
 
-![Arquitetura Geral](./arch.svg)
+<!-- ![Arquitetura Geral](./arch.svg) -->
+
+```mermaid
+flowchart TB
+
+
+subgraph CLOUD
+    subgraph PERSISTENCE
+        Database[(Database)]:::Arch
+    end
+
+    subgraph APP
+        API{{API}}:::Arch
+    end
+end
+
+subgraph DESKTOP
+    HTML(index.html):::Arch
+
+    CSS[[styles.css]]:::Arch
+    SCSS[[styles.scss]]:::Arch
+    CSSMAP[[styles.css.map]]:::Arch
+
+    JS[[main.js]]:::Arch
+
+    RS(main.rs):::Arch
+end
+
+User(((User)))
+
+
+User --> HTML
+
+SCSS & CSSMAP -.-> CSS
+JS & CSS -.-> HTML
+
+HTML --> RS
+
+RS ~~~ API
+RS --> API
+API --> Database
+Database --> API
+Database ~~~ API
+Database ~~~ API
+API --> RS
+
+RS --> HTML
+HTML --> User
+
+
+style CLOUD fill:#ccc7,color:#800,stroke:#800;
+style APP fill:#ccc7,color:#800,stroke:#800;
+style PERSISTENCE fill:#ccc7,color:#800,stroke:#800;
+style DESKTOP fill:#ccc7,color:#800,stroke:#800;
+
+style User fill:#fff,color:#800,stroke:#800;
+
+classDef Arch fill:#800,color:#efe,stroke:#efe;
+
+linkStyle 1,2,3,4 stroke:#fff
+linkStyle 5,6,7,8,0 stroke:#f00
+linkStyle default stroke:#800
+```
 
 O fluxo acima ocorre - no Desktop - todo agrupado, compilado e gerado em um único bundle executável (`.exe` no Windows, `.app` no MacOS, AppImage no Linux), sendo, portanto, tudo "uma coisa só" - entre muitas aspas. Ainda que seja tudo uma única coisa, internamente as responsabilidades e ordem lógica é estabelecida como indicado no diagrama acima.
 
