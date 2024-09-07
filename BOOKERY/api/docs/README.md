@@ -59,64 +59,58 @@ A arquitetura da API vista em detalhes, tendo o Desktop como cliente e acessando
 <!-- ![Arquitetura Geral](./arch.svg) -->
 
 ```mermaid
-flowchart TB
+flowchart BT
 
 
 subgraph CLOUD
-    subgraph PERSISTENCE
-        Database[(Database)]:::Arch
-    end
-
     subgraph APP
-        API{{API}}:::Arch
+        Routes{Routes}:::Arch
+
+        subgraph "/handlers"
+            AuthorH(["Author"]):::Arch
+            BookH(["Book"]):::Arch
+            CostumerH(["Costumer"]):::Arch
+            RentalH(["Rental"]):::Arch
+        end
+
+        subgraph "/database"
+            AuthorD(["Author"]):::Arch
+            BookD(["Book"]):::Arch
+            CostumerD(["Costumer"]):::Arch
+            RentalD(["Rental"]):::Arch
+        end
+    end
+
+    subgraph PERSISTENCE
+        Persistence[(Database)]:::Arch
     end
 end
 
-subgraph DESKTOP
-    HTML(index.html):::Arch
-
-    CSS[[styles.css]]:::Arch
-    SCSS[[styles.scss]]:::Arch
-    CSSMAP[[styles.css.map]]:::Arch
-
-    JS[[main.js]]:::Arch
-
-    RS(main.rs):::Arch
-end
-
-User(((User)))
+Desktop[Desktop]
 
 
-User --> HTML
+Desktop <--> Routes
 
-SCSS & CSSMAP -.-> CSS
-JS & CSS -.-> HTML
+Routes <--> AuthorH & BookH & CostumerH & RentalH
 
-HTML --> RS
+AuthorH <--> AuthorD
+BookH <--> BookD
+CostumerH <--> CostumerD
+RentalH <--> RentalD
 
-RS ~~~ API
-RS --> API
-API --> Database
-Database --> API
-Database ~~~ API
-Database ~~~ API
-API --> RS
-
-RS --> HTML
-HTML --> User
+AuthorD & BookD & CostumerD & RentalD <--> Persistence
 
 
 style CLOUD fill:#ccc7,color:#800,stroke:#800;
 style APP fill:#ccc7,color:#800,stroke:#800;
 style PERSISTENCE fill:#ccc7,color:#800,stroke:#800;
-style DESKTOP fill:#ccc7,color:#800,stroke:#800;
+style /handlers fill:#8007,color:#fff,stroke:#fff;
+style /database fill:#8007,color:#fff,stroke:#fff;
 
-style User fill:#fff,color:#800,stroke:#800;
+style Desktop fill:#800000,color:#fff,stroke:#fff;
 
 classDef Arch fill:#800,color:#efe,stroke:#efe;
 
-linkStyle 1,2,3,4 stroke:#fff
-linkStyle 5,6,7,8,0 stroke:#f00
 linkStyle default stroke:#800
 ```
 
