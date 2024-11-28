@@ -87,12 +87,10 @@ end
 User(((User)))
 
 
-User --> HTML
-
 SCSS & CSSMAP -.-> CSS
 JS & CSS -.-> HTML
 
-HTML --> RS
+User --> HTML --> JS --> RS
 
 RS ~~~ API
 RS --> API
@@ -102,8 +100,7 @@ Database ~~~ API
 Database ~~~ API
 API --> RS
 
-RS --> HTML
-HTML --> User
+RS --> JS --> HTML --> User
 
 
 style CLOUD fill:#ccc7,color:#800,stroke:#800;
@@ -115,8 +112,8 @@ style User fill:#fff,color:#800,stroke:#800;
 
 classDef Arch fill:#800,color:#efe,stroke:#efe;
 
-linkStyle 1,2,3,4 stroke:#fff
-linkStyle 5,6,7,8,0 stroke:#f00
+linkStyle 0,1,2,3,4 stroke:#fff
+linkStyle 5,6,7,8,9 stroke:#f00
 linkStyle default stroke:#800
 ```
 
