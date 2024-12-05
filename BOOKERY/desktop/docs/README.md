@@ -3,9 +3,9 @@
 ![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/bookery?labelColor=101010)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/bookery/unittest.yml?style=flat&labelColor=%23101010)
 
-Rodando do lado do cliente, literalmente, o Desktop se responsabilida da comunicação direta com o usuário final do sistema. É o canal de contato entre o operador do sistema e todas as informações que o sistema apresenta.
+Running on the client side, literally, the Desktop is responsible for direct communication with the system's end user. It is the contact channel between the system operator and all the information the system presents.
 
-Sua estrutura de arquivos reflete sua estrutura de processamento, suas rotas e interações com o banco de dados. Cada diretório possui arquivos cujo nome de cada arquivo define a qual `struct` - modelo do Banco de Dados - este arquivo trata dentro da lógica definida por seu diretório.
+Its file structure reflects its processing structure, its routes and interactions with the database. Each directory has files whose name defines which `struct' - the database model - this file deals with within the logic defined by its directory.
 
 ## Stack
 
@@ -16,47 +16,45 @@ Sua estrutura de arquivos reflete sua estrutura de processamento, suas rotas e i
 ![Sass logo](https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=sass&logoColor=white)
 ![JavaScript logo](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E)
 
-## Arquitetura
+## Arch
 
-O Desktop do Bookery apresenta a arquitetura padrão de um projeto Tauri, definida pelo próprio Framework. De forma prática pode-se observar a seguinte estrutura:
+The Bookery Desktop presents the standard architecture of a Tauri project, defined by the Framework itself. In practical terms, you can see the following structure:
 
 ```bash
 .
-├── docs                                      # Diretório da documentação
-│   ├── README.md                             # Arquivo principal de leitura
-│   └── ...                                   # Demais arquivos úteis para documentação
+├── docs                                      # Documentation directory
+│   ├── README.md                             # Main read-only file
+│   └── ...                                   # Other files useful for documentation
 │
-├── package.json                              # Arquivo de gerenciamento de dependências
-├── package-lock.json                         # Arquivo de gerenciamento de dependências
+├── package.json                              # Dependency management file
+├── package-lock.json                         # Dependency management file
 │
-├── src                                       # Diretório do código-fonte das interfaces do usuário
-│   ├── index.html                            # Arquivo de entrada das interfaces
-│   ├── main.js                               # Arquivo principal de comportamentos em JavaScript
-│   ├── styles.css                            # Arquivo de estilos autogerado e comprimido para otimização
-│   ├── styles.css.map                        # Arquivo de config e organização para o arquivo acima
-│   └── styles.scss                           # Arquivo de estilos definidos
+├── src                                       # User interfaces source code directory
+│   ├── index.html                            # Interface input file
+│   ├── main.js                               # Main JavaScript behavior file
+│   ├── styles.css                            # Self-generated and compressed styles file for optimization
+│   ├── styles.css.map                        # Config and organization file for the above file
+│   └── styles.scss                           # File of defined styles
 │
-└── src-tauri                                 # Diretório do código-fonte do compilador/bundle
-    ├── build.rs                              # Arquivo de config da build
+└── src-tauri                                 # Compiler/bundle source code directory
+    ├── build.rs                              # Build config file
     │
-    ├── Cargo.toml                            # Arquivo de dependências do projeto
+    ├── Cargo.toml                            # Project dependencies file
     │
-    ├── icons                                 # Diretório de ícones da aplicação
-    │   ├── *.icns                            # Arquivos de ícones no format .icns
-    │   ├── *.ico                             # Arquivos de ícones no format .ico
-    │   └── *.png                             # Arquivos de ícones no format .png
+    ├── icons                                 # Application icons directory
+    │   ├── *.icns                            # Icon files in .icns format
+    │   ├── *.ico                             # Icon files in .ico format
+    │   └── *.png                             # Icon files in .png format
     │
-    ├── tauri.conf.json                       # Arquivo de auxílio e configuração de biuld
+    ├── tauri.conf.json                       # Build help and configuration file
     │
-    └── src                                   # Diretório do código-fonte do motor
-        └── main.rs                           # Arquivo de entrada do "Back-end" do executável
+    └── src                                   # Engine source code directory
+        └── main.rs                           # Back-end executable input file
 ```
 
-**OBS: apenas informando que não há nenhum diretório ou arquivo de `struct` listado acima pois as estruturas `Author`, `Book`, `Costumer` e `Rental` foram definidas dentro do workspace no diretório de nome `shared`. Esta disposição se deve ao fato de que as estruturas citadas anteriormente são compartilhadas entre as duas frentes do projeto, utilizadas tanto no Desktop quanto na API.**
+**NOTE: Just to inform you that there is no `struct` directory or file listed above because the `Author`, `Book`, `Costumer` and `Rental` structures have been defined within the workspace in the directory named `shared`. This arrangement is due to the fact that the structures mentioned above are shared between the two fronts of the project, used both on the Desktop and in the API.**
 
-A arquitetura do Desktop vista em detalhes, tendo a API como servidor que, por sua vez, conforme necessidade acessa o Banco de Dados; ainda em escala macro mas observando com mais detalhes o Front-end da aplicação, temos então a seguinte situação:
-
-<!-- ![Arquitetura Geral](./arch.svg) -->
+The Desktop architecture seen in detail, with the API as the server which, in turn, accesses the Database as needed; still on a macro scale but looking in more detail at the Front-end of the application, we then have the following situation:
 
 ```mermaid
 flowchart TB
@@ -117,46 +115,42 @@ linkStyle 5,6,7,8,9 stroke:#f00
 linkStyle default stroke:#800
 ```
 
-O fluxo acima ocorre - no Desktop - todo agrupado, compilado e gerado em um único bundle executável (`.exe` no Windows, `.app` no MacOS, AppImage no Linux), sendo, portanto, tudo "uma coisa só" - entre muitas aspas. Ainda que seja tudo uma única coisa, internamente as responsabilidades e ordem lógica é estabelecida como indicado no diagrama acima.
+The above flow takes place - on the Desktop - all grouped together, compiled and generated in a single executable bundle (`.exe` on Windows, `.app` on MacOS, AppImage on Linux), so it's all “one thing” - in quotes. Although it is all one thing, internally the responsibilities and logical order is established as shown in the diagram above.
 
-## Básico
+## Basic
 
-Antes de iniciar com o desenvolvimento e os comandos, é importante definir as variáveis de ambiente no seu ambiente de desenvolvimento. Abaixo a listagem de quais definir:
+Before starting with development and commands, it is important to define the environment variables in your development environment. Below is a list of which ones to set:
 
-| Variável  | Caráter           | Responsabilidade            |
-| :-------- | :---------------- | :-------------------------- |
-| `API_URL` | `&str - required` | String de conexão com a API |
+| Name      |  Type  | Mandatory  | Default | Description             |
+| :-------- | :----: | :--------: | :-----: | ----------------------- |
+| `API_URL` | `&str` | `Required` | `None`  | API's string connection |
 
-<!-- ### Iniciar Testes Automatizados
-
-`cargo test` -->
-
-### Iniciar Servidor
+### Run Local Server
 
 `npm run tauri dev`
 
-### Criar Bundle
+### Build Bundle
 
 `npm run tauri build`
 
-## Distribuição de Tarefas: JS e Rust
+## JS vs Rust
 
-No mini ecossistema fechado denominado Bookery, algumas tarefas administrativas só podem ser realizadas pelo JavaScript, outras apenas pelo Rust, contudo, algumas delas poderiam ser realizadas por ambos. Aqui são destacadas e definidas com mais detalhes quais as responsabilidades de cada linguagem em determinado tipo de tarefa, juntamente com a justificativa de cada escolha.
+In the closed mini ecosystem called Bookery, some administrative tasks can only be carried out by JavaScript, others only by Rust, but some of them could be carried out by both. Here, the responsibilities of each language for a given type of task are highlighted and defined in more detail, along with the justification for each choice.
 
 ### JavaScript
 
-As tarefas de responsabilidade única e exclusivamente do JS são aquelas que interagem e impactam diretamente com a interface em contato com o usuário. Exatamente como em uma página web, o JavaScript assume aqui as mesmas tarefas que assumiria por lá.
+The tasks that JS is solely responsible for are those that interact and have a direct impact on the interface in contact with the user. Just like on a web page, JavaScript takes on the same tasks here as it would there.
 
-Comportamentos de botões, manipulação de elementos, alteração de textos, essas são as atribuições de responsabilidade do "pato", como alguns chamam o cérebro do HTML.
+Button behavior, element manipulation, text alteration - these are the responsibilities of the “duck”, as some call the brain of HTML.
 
 ### Rust
 
-Por questões práticas, o Rust assume a responsabilidade de se comunicar com a API, processando requisições e respostas à API e ao usuário, respectivamente. A praticidade vem exatamente da estrutura compartilhada por ambas as frentes, onde as structs `Author`, `Book`, `Costumer` e `Rental`, criadas em Rust, podem ser reaproveitadas.
+For practical reasons, Rust takes on the responsibility of communicating with the API, processing requests and responses to the API and the user, respectively. The practicality comes precisely from the structure shared by both fronts, where the structs `Author`, `Book`, `Costumer` and `Rental`, created in Rust, can be reused.
 
-### Ambos
+### Both
 
-Questões como limpeza/tratamento de dados, montagem de HTML, contagem de elementos e renderização de componentes poderiam ser de responsabilidade de qualquer um dos dois lados, são ambos excelentes nesses assuntos, porém, diferentes e exatamente essas diferenças que determinaram qual administra cada questão.
+Issues such as data cleaning/processing, HTML assembly, element counting and component rendering could be the responsibility of either side, they are both excellent in these matters, but different and it is precisely these differences that have determined which side manages which issue.
 
-Javascript é extremamente prático, simples de ler, fácil de escrever, direto com suas abordagens, como um painel de um carro. Por sua grande facilidade nessas situações, ele assume as tarefas como tratamento de dados e renderização de componentes.
+Javascript is extremely practical, simple to read, easy to write, straightforward in its approach, like a car dashboard. Because it's so easy in these situations, it takes on tasks such as data processing and component rendering.
 
-Rust é extremamente detalhista, intrigante de ler, complexo para escrever, regrado com suas abordagens, como um painél de avião. Ainda que seja mais verboso e rígido, sua velocidade de processamento e segurança são perfeitos para cuidar de tarefas mais pesadas, como contagem de elementos extremamente longos e o processamento + montagem de corpo HTML pesado, carregado.
+Rust is extremely detailed, intriguing to read, complex to write, regimented with its approaches, like an airplane dashboard. Although it's more verbose and rigid, its processing speed and security are perfect for handling heavier tasks, such as counting extremely long elements and processing + assembling heavy, loaded HTML bodies.

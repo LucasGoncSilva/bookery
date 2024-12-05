@@ -6,11 +6,11 @@
 ![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/bookery?labelColor=101010)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/bookery/unittest.yml?style=flat&labelColor=%23101010)
 
-Criado em Axum e Tauri, Frameworks Rust para API e Desktop, respectivamente, Bookery é um mini-sistema desktop para bibliotecas realizarem o gerenciamento de seus livros e empréstimos.
+Built on Axum and Tauri, Rust frameworks for API and Desktop, respectively, Bookery is a mini desktop system for libraries to manage their books and loans.
 
-O Bookery permite o cadastro e a busca eficiente de autores, livros, clientes e aluguéis, oferecendo uma experiência completa de gerenciamento com filtros avançados, opções de edição e uma interface intuitiva. Cada funcionalidade foi projetada para garantir que bibliotecas possam administrar suas coleções e transações de maneira ágil e precisa.
+Bookery allows you to efficiently register and search for authors, books, customers and rentals, offering a complete management experience with advanced filters, editing options and an intuitive interface. Each feature has been designed to ensure that libraries can manage their collections and transactions quickly and accurately.
 
-Desenvolvido com um foco rigoroso em qualidade, o sistema é avaliado por mais de 140 testes automatizados, garantindo robustez e confiabilidade. Aproveitando a eficiência do Rust, o Bookery supera soluções como o Electron em termos de processamento e uso de memória, enquanto a API em Axum proporciona uma performance perfeitamente comparável a C/C++, oferecendo um desempenho elevado com simplicidade e eficiência.
+Developed with a rigorous focus on quality, the system is evaluated by more than 140 automated tests, guaranteeing robustness and reliability. Taking advantage of Rust's efficiency, Bookery outperforms solutions such as Electron in terms of processing and memory usage, while the Axum API provides performance perfectly comparable to C/C++, offering high performance with simplicity and efficiency.
 
 ## Stack
 
@@ -27,11 +27,9 @@ Desenvolvido com um foco rigoroso em qualidade, o sistema é avaliado por mais d
 
 ![Docker logo](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 
-## Arquitetura
+## Arch
 
-A arquitetura pode ser detalhada de forma geral em duas frentes: Desktop e API. Tratando a aplicação Desktop como cliente desta solução, será detalhada uma visão comportamental em escala "macro" seguindo o fluxo de dados sem focar no "micro", como cada ação de cada função. Acompanhe abaixo o fluxo geral de informações:
-
-<!-- ![Arquitetura Geral](./arch.svg) -->
+The architecture can be broadly broken down into two fronts: Desktop and API. Treating the Desktop application as the client of this solution, a behavioral view will be detailed on a “macro” scale, following the flow of data without focusing on the “micro”, such as each action of each function. Follow the general flow of information below:
 
 ```mermaid
 flowchart RL
@@ -68,14 +66,14 @@ linkStyle 0,1 stroke:#f00
 linkStyle default stroke:#800
 ```
 
-## Detalhes
+## Details
 
-Por razões organizacionais, a fim de que seja mantida a coerência na documentação do Bookery, os detalhes de cada face do sistema estão descritos dentro de seus próprios módulos. Considere acessar os endereços abaixo para visualizar os detalhes da arquitetura de cada módulo:
+For organizational reasons, in order to maintain consistency in the Bookery documentation, the details of each side of the system are described within their own modules. Consider visiting the addresses below to view the details of each module's architecture:
 
-- [Arquitetura Desktop](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/desktop) - Cliente da solução, parte que roda na máquina do usuário
-- [Arquitetura API](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/api) - Servidor da solução, lado mantido na nuvem
-- [Arquitetura Compartilhada](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/shared) - Hub de estruturas compartilhadas entre os módulos supracitados
+- [Arquitetura Desktop](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/desktop) - Client of the solution, part that runs on the user's machine
+- [Arquitetura API](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/api) - Solution server, side maintained in the cloud
+- [Arquitetura Compartilhada](https://github.com/LucasGoncSilva/bookery/tree/main/BOOKERY/shared) - Hub for shared structures between the aforementioned modules
 
-## Licença
+## License
 
 This project is under [MPLv2 - Mozilla Public License Version 2.0](https://choosealicense.com/licenses/mpl-2.0/). Permissions of this weak copyleft license are conditioned on making available source code of licensed files and modifications of those files under the same license (or in certain cases, one of the GNU licenses). Copyright and license notices must be preserved. Contributors provide an express grant of patent rights. However, a larger work using the licensed work may be distributed under different terms and without source code for files added in the larger work.

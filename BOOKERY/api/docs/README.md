@@ -3,9 +3,9 @@
 ![GitHub License](https://img.shields.io/github/license/LucasGoncSilva/bookery?labelColor=101010)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/LucasGoncSilva/bookery/unittest.yml?style=flat&labelColor=%23101010)
 
-Rodando do lado do servidor, a API realiza o processamento dos dados, indo e vindo, para a aplicação Desktop e para o Banco de Dados.
+Running on the server side, the API processes data back and forth to the desktop application and the database.
 
-Sua estrutura de arquivos reflete sua estrutura de processamento, suas rotas e interações com o banco de dados. Cada diretório possui arquivos cujo nome de cada arquivo define a qual `struct` - modelo do Banco de Dados - este arquivo trata dentro da lógica definida por seu diretório.
+Its file structure reflects its processing structure, its routes and interactions with the database. Each directory has files whose filename defines which `struct` - database model - this file deals with within the logic defined by its directory.
 
 ## Stack
 
@@ -15,48 +15,46 @@ Sua estrutura de arquivos reflete sua estrutura de processamento, suas rotas e i
 
 ![Docker logo](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 
-## Arquitetura
+## Arch
 
-A API do Bookery utiliza do Princípio de Responsabilidade Única - Single-Responsability Principle - aplicada ao escopo de arquivos individuais - Single-File Component - de modo que no diretório "images", por exemplo, um arquivo chamado "png.rs" seja um arquivo Rust especializado no processamento de imagens do tipo PNG, apenas. De forma prática pode-se observar a seguinte estrutura:
+The Bookery API uses the Single-Responsability Principle applied to the scope of individual files - Single-File Component - so that in the “images” directory, for example, a file called “png.rs” is a Rust file specialized in processing PNG-type images only. In practical terms, you can see the following structure:
 
 ```bash
 .
-├── Cargo.toml                                # Arquivo de dependências do projeto
+├── Cargo.toml                                          # Project dependencies file
 │
-├── docs                                      # Diretório da documentação
-│   ├── README.md                             # Arquivo principal de leitura
-│   └── ...                                   # Demais arquivos úteis para documentação
+├── docs                                                # Documentation directory
+│   ├── README.md                                       # Main reading file
+│   └── ...                                             # Other files useful for documentation
 │
-└── src                                       # Diretório do código-fonte
+└── src                                                 # Source code directory
     │
-    ├── database                              # Diretório de responsabilidades do Banco de Dados
-    │   ├── mod.rs                            # Arquivo de modularização do diretório
-    │   ├── conn.rs                           # Arquivo responsável na conexão com o Banco de Dados
-    │   ├── author.rs                         # Arquivo especialista na struct "Author"
-    │   ├── book.rs                           # Arquivo especialista na struct "Book"
-    │   ├── costumer.rs                       # Arquivo especialista na struct "Costumer"
-    │   └── rental.rs                         # Arquivo especialista na struct "Rental"
+    ├── database                                        # Database responsibilities directory
+    │   ├── mod.rs                                      # Directory modularization file
+    │   ├── conn.rs                                     # File responsible for connecting to the Database
+    │   ├── author.rs                                   # Specialist file on “Author” struct
+    │   ├── book.rs                                     # Specialist file on “Book” struct
+    │   ├── costumer.rs                                 # Specialist file on “Costumer” struct
+    │   └── rental.rs                                   # Specialist file on “Rental” struct
     │
-    ├── handlers                              # Diretório de responsabilidades das funções de processamento
-    │   ├── mod.rs                            # Arquivo de modularização do diretório
-    │   ├── author.rs                         # Arquivo especialista na struct "Author"
-    │   ├── book.rs                           # Arquivo especialista na struct "Book"
-    │   ├── costumer.rs                       # Arquivo especialista na struct "Costumer"
-    │   └── rental.rs                         # Arquivo especialista na struct "Rental"
+    ├── handlers                                        # Directory of processing function responsibilities
+    │   ├── mod.rs                                      # Directory modularization file
+    │   ├── author.rs                                   # Specialist file on “Author” struct
+    │   ├── book.rs                                     # Specialist file on “Book” struct
+    │   ├── costumer.rs                                 # Specialist file on “Costumer” struct
+    │   └── rental.rs                                   # Specialist file on “Rental” struct
     │
-    ├── router.rs                             # Arquivo de definição de rotas e métodos
+    ├── router.rs                                       # File for defining routes and methods
     │
-    ├── migrations                            # Diretório relacionado às migrações do Banco de Dados
-    │   └── 0000_create_table_example.sql     # Migrações individuais do Banco de Dados em sequência
+    ├── migrations                                      # Directory related to database migrations
+    │   └── 0000_create_table_example.sql               # Individual database migrations in sequence
     │
-    └── main.rs                               # Arquivo de entrada do projeto - API
+    └── main.rs                                         # Project input file - API
 ```
 
-**OBS: apenas informando que não há nenhum diretório ou arquivo de `struct` listado acima pois as estruturas `Author`, `Book`, `Costumer` e `Rental` foram definidas dentro do workspace no diretório de nome `shared`. Esta disposição se deve ao fato de que as estruturas citadas anteriormente são compartilhadas entre as duas frentes do projeto, utilizadas tanto no Desktop quanto na API.**
+**NOTE: Just to inform you that there is no `struct` directory or file listed above because the `Author`, `Book`, `Costumer` and `Rental` structures have been defined within the workspace in the directory named `shared`. This arrangement is due to the fact that the structures mentioned above are shared between the two fronts of the project, used both on the Desktop and in the API.**
 
-A arquitetura da API vista em detalhes, tendo o Desktop como cliente e acessando o Banco de Dados, ainda em escala macro mas observando com mais detalhes o Back-end da aplicação, temos então a seguinte situação:
-
-<!-- ![Arquitetura Geral](./arch.svg) -->
+The API architecture seen in detail, with the Desktop as the client and accessing the Database, still on a macro scale but looking in more detail at the application's Back-end, we then have the following situation:
 
 ```mermaid
 flowchart BT
@@ -114,21 +112,21 @@ classDef Arch fill:#800,color:#efe,stroke:#efe;
 linkStyle default stroke:#800
 ```
 
-O fluxo acima ocorre - na API - todo a partir do `main.rs`, podendo interpretá-lo como a própria box de "APP" no esquema acima, visto que tudo quando compilado é estruturado e organizado através da variável `app`, na declaração `let app: Router = router::router(db);` dentro do arquivo informado anteriormente.
+The above flow takes place - in the API - all from `main.rs`, and we can interpret it as the “APP” box itself in the above schema, since everything when compiled is structured and organized through the `app` variable, in the `let app: Router = router::router(db);` statement inside the file mentioned above.
 
-## Básico
+## Basic
 
-Antes de iniciar com o desenvolvimento e os comandos, é importante definir as variáveis de ambiente no seu ambiente de desenvolvimento. Abaixo a listagem de quais definir:
+Before starting with development and commands, it is important to define the environment variables in your development environment. Below is a list of which ones to set:
 
-| Variável       | Caráter             | Responsabilidade                                                                                           |
-| :------------- | :------------------ | :--------------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL` | `String - optional` | String de conexão com o Banco de Dados<br>Default `"postgres://postgres:postgres@localhost:5432/postgres"` |
+| Name           | Type     | Mandatory  |                         Default                          | Desc                           |
+| :------------- | :------- | :--------: | :------------------------------------------------------: | :----------------------------- |
+| `DATABASE_URL` | `String` | `Optional` | `"postgres://postgres:postgres@localhost:5432/postgres"` | Database connection string/URL |
 
-### Iniciar Testes Automatizados
+### Run Automated Tests
 
 `cargo test`
 
-### Iniciar Servidor
+### Run Local Server
 
 `cargo run` para desenvolvimento
 
@@ -136,157 +134,157 @@ Antes de iniciar com o desenvolvimento e os comandos, é importante definir as v
 
 ## Endpoints
 
-As rotas da API se dividem entre cada `struct` organizando-se por ações, além de se dividir através das próprias estruturas, é claro; acompanhe abaixo a organização para mais detalhes:
+The API routes are divided between each `struct` and organized by actions, as well as being divided by the structures themselves, of course; follow the organization below for more details:
 
 <table>
     <thead>
         <tr>
             <th>Struct</th>
-            <th>Ação</th>
-            <th>Método</th>
+            <th>Action</th>
+            <th>Method</th>
             <th>Endpoint</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td rowspan=6>Author</td>
-            <td>Criar</td>
+            <td>Create</td>
             <td>POST</td>
             <td><code>/author/create</code></td>
         </tr>
         <tr>
-            <td>Obter</td>
+            <td>Get</td>
             <td>GET</td>
             <td><code>/author/get/:id</code></td>
         </tr>
         <tr>
-            <td>Filtrar</td>
+            <td>Filter</td>
             <td>GET</td>
             <td><code>/author/search</code></td>
         </tr>
         <tr>
-            <td>Atualizar</td>
+            <td>Update</td>
             <td>POST</td>
             <td><code>/author/update</code></td>
         </tr>
         <tr>
-            <td>Deletar</td>
+            <td>Delete</td>
             <td>POST</td>
             <td><code>/author/delete</code></td>
         </tr>
         <tr>
-            <td>Contar</td>
+            <td>Count</td>
             <td>GET</td>
             <td><code>/author/count</code></td>
         </tr>
         <tr>
             <td rowspan=8>Book</td>
-            <td>Criar</td>
+            <td>Create</td>
             <td>POST</td>
             <td><code>/book/create</code></td>
         </tr>
         <tr>
-            <td>Obter</td>
+            <td>Get</td>
             <td>GET</td>
             <td><code>/book/get/:id</code></td>
         </tr>
         <tr>
-            <td>Obter Bruto</td>
+            <td>Get Raw</td>
             <td>GET</td>
             <td><code>/book/get-raw/:id</code></td>
         </tr>
         <tr>
-            <td>Filtrar</td>
+            <td>Filter</td>
             <td>GET</td>
             <td><code>/book/search</code></td>
         </tr>
-            <td>Filtrar Bruto</td>
+            <td>Filter Raw</td>
             <td>GET</td>
             <td><code>/book/search-raw</code></td>
         </tr>
         <tr>
-            <td>Atualizar</td>
+            <td>Update</td>
             <td>POST</td>
             <td><code>/book/update</code></td>
         </tr>
         <tr>
-            <td>Deletar</td>
+            <td>Delete</td>
             <td>POST</td>
             <td><code>/book/delete</code></td>
         </tr>
         <tr>
-            <td>Contar</td>
+            <td>Count</td>
             <td>GET</td>
             <td><code>/book/count</code></td>
         </tr>
         <tr>
             <td rowspan=6>Costumer</td>
-            <td>Criar</td>
+            <td>Create</td>
             <td>POST</td>
             <td><code>/costumer/create</code></td>
         </tr>
         <tr>
-            <td>Obter</td>
+            <td>Get</td>
             <td>GET</td>
             <td><code>/costumer/get/:id</code></td>
         </tr>
         <tr>
-            <td>Filtrar</td>
+            <td>Filter</td>
             <td>GET</td>
             <td><code>/costumer/search</code></td>
         </tr>
         <tr>
-            <td>Atualizar</td>
+            <td>Update</td>
             <td>POST</td>
             <td><code>/costumer/update</code></td>
         </tr>
         <tr>
-            <td>Deletar</td>
+            <td>Delete</td>
             <td>POST</td>
             <td><code>/costumer/delete</code></td>
         </tr>
         <tr>
-            <td>Contar</td>
+            <td>Count</td>
             <td>GET</td>
             <td><code>/costumer/count</code></td>
         </tr>
         <tr>
             <td rowspan=8>Rental</td>
-            <td>Criar</td>
+            <td>Create</td>
             <td>POST</td>
             <td><code>/rental/create</code></td>
         </tr>
         <tr>
-            <td>Obter</td>
+            <td>Get</td>
             <td>GET</td>
             <td><code>/rental/get/:id</code></td>
         </tr>
         <tr>
-            <td>Obter Bruto</td>
+            <td>Get Raw</td>
             <td>GET</td>
             <td><code>/rental/get-raw/:id</code></td>
         </tr>
         <tr>
-            <td>Filtrar</td>
+            <td>Filter</td>
             <td>GET</td>
             <td><code>/rental/search</code></td>
         </tr>
-            <td>Filtrar Bruto</td>
+            <td>Filter Raw</td>
             <td>GET</td>
             <td><code>/rental/search-raw</code></td>
         </tr>
         <tr>
-            <td>Atualizar</td>
+            <td>Update</td>
             <td>POST</td>
             <td><code>/rental/update</code></td>
         </tr>
         <tr>
-            <td>Deletar</td>
+            <td>Delete</td>
             <td>POST</td>
             <td><code>/rental/delete</code></td>
         </tr>
         <tr>
-            <td>Contar</td>
+            <td>Count</td>
             <td>GET</td>
             <td><code>/rental/count</code></td>
         </tr>
